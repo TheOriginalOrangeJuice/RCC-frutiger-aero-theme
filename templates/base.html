@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="{{ get_locale() }}" data-bs-theme="light">
+<head>
+  <title>{{ title or Configs.ctf_name }}</title>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#087fc1">
+  <link rel="shortcut icon" href="{{ Configs.ctf_small_icon }}" type="image/x-icon">
+
+  {{ meta | safe }}
+
+  {% block stylesheets %}
+    {{ Assets.css("assets/scss/main.scss") }}
+  {% endblock %}
+
+  {{ Plugins.styles }}
+
+  <script type="text/javascript">
+    window.init = {
+      'urlRoot': "{{ request.script_root }}",
+      'csrfNonce': "{{ Session.nonce }}",
+      'userMode': "{{ Configs.user_mode }}",
+      'userId': {{ Session.id }},
+      'userName': {{ User.name | tojson }},
+      'userEmail': {{ User.email | tojson }},
+      'userVerified': {{ User.verified | tojson }},
+      'teamId': {{ Team.id | tojson }},
+      'teamName': {{ Team.name | tojson }},
+      'start': {{ Configs.start | tojson }},
+      'end': {{ Configs.end | tojson }},
+      'themeSettings': {{ Configs.theme_settings | tojson }},
+      'eventSounds': [
+        "{{ url_for('views.themes_beta', theme=get_ctf_theme(), path='sounds/notification.webm') }}",
+        "{{ url_for('views.themes_beta', theme=get_ctf_theme(), path='sounds/notification.mp3') }}",
+      ],
+    };
+  </script>
+
+  {{ Configs.theme_header }}
+</head>
+<body class="aero-body endpoint-{{ request.endpoint | replace('.', '-') }} {{ 'is-authenticated' if authed() else 'is-guest' }}">
+  <a class="aero-skip-link" href="#aero-main">{% trans %}Skip to content{% endtrans %}</a>
+
+  <div class="aero-atmosphere" aria-hidden="true">
+    <span class="aero-sun-halo"></span>
+    <span class="aero-cloud-drift aero-cloud-drift-one"></span>
+    <span class="aero-cloud-drift aero-cloud-drift-two"></span>
+    <span class="aero-water-motion"></span>
+    <span class="aero-water-sparkles"></span>
+    <span class="aero-bubble aero-bubble-one"></span>
+    <span class="aero-bubble aero-bubble-two"></span>
+    <span class="aero-bubble aero-bubble-three"></span>
+    <span class="aero-rising-bubble aero-rising-bubble-one"></span>
+    <span class="aero-rising-bubble aero-rising-bubble-two"></span>
+    <span class="aero-rising-bubble aero-rising-bubble-three"></span>
+    <span class="aero-rising-bubble aero-rising-bubble-four"></span>
+    <span class="aero-rising-bubble aero-rising-bubble-five"></span>
+    <span class="aero-floating-leaf aero-floating-leaf-one"></span>
+    <span class="aero-floating-leaf aero-floating-leaf-two"></span>
+    <span class="aero-floating-leaf aero-floating-leaf-three"></span>
+    <span class="aero-light-ribbon"></span>
+  </div>
+
+  <div class="aero-app-shell">
+    <section class="aero-workspace" aria-label="{{ Configs.ctf_name }}">
+      {% include "components/navbar.html" %}
+      <main id="aero-main" role="main" tabindex="-1">
+        {% block content %}{% endblock %}
+      </main>
+
+      <footer class="aero-statusbar">
+        <span class="aero-footer-status"><span></span>{% trans %}Online{% endtrans %}</span>
+        <small><time data-aero-clock aria-label="{% trans %}Local time{% endtrans %}"></time></small>
+        <small><a href="https://ctfd.io">{% trans %}Powered by CTFd{% endtrans %}</a></small>
+      </footer>
+    </section>
+  </div>
+
+  {% include "components/snackbar.html" %}
+  {% include "components/notifications.html" %}
+
+  <div class="aero-celebration" aria-hidden="true">
+    {% for bubble in range(12) %}
+      <span style="--bubble-index: {{ bubble }}"></span>
+    {% endfor %}
+  </div>
+
+  {% block scripts %}
+    {{ Assets.js("assets/js/page.js") }}
+  {% endblock %}
+
+  {{ Plugins.scripts }}
+  {{ Configs.theme_footer }}
+</body>
+</html>

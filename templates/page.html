@@ -1,0 +1,81 @@
+{% extends "base.html" %}
+
+{% set is_home = request.endpoint == 'views.static_html' and request.view_args and request.view_args.get('route') == 'index' %}
+
+{% block window_title %}{% if is_home %}{% trans %}Home{% endtrans %}{% else %}{{ title or Configs.ctf_name }}{% endif %}{% endblock %}
+
+{% block content %}
+  {% if is_home %}
+    <div class="aero-home-screen">
+      <section class="aero-welcome-panel">
+        <div class="aero-welcome-copy">
+          <span class="aero-eyebrow"><i class="fas fa-sun" aria-hidden="true"></i>{% trans %}A brighter competition awaits{% endtrans %}</span>
+          <p class="aero-welcome-kicker">{% trans %}Welcome to{% endtrans %}</p>
+          <h1>{{ Configs.ctf_name }}</h1>
+          {% if Configs.ctf_description %}
+            <p class="aero-hero-lead">{{ Configs.ctf_description }}</p>
+          {% else %}
+            <p class="aero-hero-lead">{% trans %}A brighter place to explore, learn, and capture flags together.{% endtrans %}</p>
+          {% endif %}
+
+          <div class="aero-hero-actions">
+            {% if authed() %}
+              <a class="btn aero-button-green" href="{{ url_for('challenges.listing') }}"><i class="fas fa-flag" aria-hidden="true"></i>{% trans %}View challenges{% endtrans %}</a>
+            {% elif registration_visible() %}
+              <a class="btn aero-button-green" href="{{ url_for('auth.register') }}"><i class="fas fa-seedling" aria-hidden="true"></i>{% trans %}Create an account{% endtrans %}</a>
+            {% else %}
+              <a class="btn aero-button-green" href="{{ url_for('auth.login') }}"><i class="fas fa-right-to-bracket" aria-hidden="true"></i>{% trans %}Sign in{% endtrans %}</a>
+            {% endif %}
+
+            {% if not authed() and Configs.challenge_visibility == 'public' %}
+              <a class="btn aero-button-primary" href="{{ url_for('challenges.listing') }}"><i class="fas fa-compass" aria-hidden="true"></i>{% trans %}Browse challenges{% endtrans %}</a>
+            {% elif Configs.account_visibility != 'admins' and ((authed() and Configs.score_visibility != 'admins') or Configs.score_visibility == 'public') %}
+              <a class="btn aero-button-primary" href="{{ url_for('scoreboard.listing') }}"><i class="fas fa-ranking-star" aria-hidden="true"></i>{% trans %}View scoreboard{% endtrans %}</a>
+            {% endif %}
+          </div>
+        </div>
+
+        <div class="aero-hero-globe" aria-hidden="true">
+          <div class="aero-hero-globe-inner">
+            {% if Configs.ctf_logo %}
+              <img class="ctf_logo" src="{{ url_for('views.files', path=Configs.ctf_logo) }}" alt="">
+            {% else %}
+              <i class="fas fa-globe-americas"></i>
+            {% endif %}
+          </div>
+          <span class="aero-orbit aero-orbit-one"></span>
+          <span class="aero-orbit aero-orbit-two"></span>
+          <span class="aero-globe-spark"></span>
+        </div>
+      </section>
+
+      <section class="aero-launchpad" aria-label="{% trans %}Competition features{% endtrans %}">
+        <a href="{{ url_for('challenges.listing') }}" class="aero-launch-tile">
+          <span class="aero-launch-icon aero-launch-green"><i class="fas fa-flag" aria-hidden="true"></i></span>
+          <span><strong>{% trans %}Challenges{% endtrans %}</strong><small>{% trans %}Solve challenges and collect flags{% endtrans %}</small></span>
+          <i class="fas fa-chevron-right" aria-hidden="true"></i>
+        </a>
+        <a href="{{ url_for('users.private') if authed() else (url_for('auth.register') if registration_visible() else url_for('auth.login')) }}" class="aero-launch-tile">
+          <span class="aero-launch-icon aero-launch-cyan"><i class="fas fa-seedling" aria-hidden="true"></i></span>
+          <span><strong>{% trans %}Your profile{% endtrans %}</strong><small>{% trans %}Review your progress and activity{% endtrans %}</small></span>
+          <i class="fas fa-chevron-right" aria-hidden="true"></i>
+        </a>
+        {% if Configs.account_visibility != 'admins' and Configs.score_visibility != 'admins' %}
+          <a href="{{ url_for('scoreboard.listing') }}" class="aero-launch-tile">
+            <span class="aero-launch-icon aero-launch-blue"><i class="fas fa-trophy" aria-hidden="true"></i></span>
+            <span><strong>{% trans %}Scoreboard{% endtrans %}</strong><small>{% trans %}See the current standings{% endtrans %}</small></span>
+            <i class="fas fa-chevron-right" aria-hidden="true"></i>
+          </a>
+        {% endif %}
+      </section>
+
+      {% if content | trim %}
+        <section class="aero-home-content aero-rich-content">{{ content | safe }}</section>
+      {% endif %}
+    </div>
+  {% else %}
+    <section class="aero-standard-page"><div class="aero-content-window aero-rich-content">{{ content | safe }}</div></section>
+  {% endif %}
+{% endblock %}
+
+{% block scripts %}{{ Assets.js("assets/js/page.js") }}{% endblock %}

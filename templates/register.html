@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block window_title %}{% trans %}Register{% endtrans %}{% endblock %}
+
+{% block content %}
+  <div class="aero-auth-screen">
+    <section class="aero-auth-window aero-register-window">
+      <div class="aero-auth-art" aria-hidden="true">
+        <span class="aero-auth-orb aero-seed-orb"><i class="fas fa-seedling"></i></span>
+        <div><strong>{% trans %}Create your account{% endtrans %}</strong><small>{% trans %}Join the competition and start solving.{% endtrans %}</small></div>
+      </div>
+
+      <div class="aero-auth-form">
+        <span class="aero-eyebrow"><i class="fas fa-user-plus" aria-hidden="true"></i>{% trans %}Registration{% endtrans %}</span>
+        <h1>{% trans %}Create your account{% endtrans %}</h1>
+        <p>{% trans %}Choose your public name and account credentials.{% endtrans %}</p>
+        {% include "components/errors.html" %}
+
+        {% if integrations.mlc() %}
+          <a class="btn aero-button-secondary w-100" href="{{ url_for('auth.oauth_login') }}">Login with Major League Cyber</a>
+          <div class="aero-divider"><span>{% trans %}or{% endtrans %}</span></div>
+        {% endif %}
+
+        {% with form = Forms.auth.RegistrationForm() %}
+          {% from "macros/forms.html" import render_extra_fields %}
+          <form method="post" accept-charset="utf-8" role="form">
+            <label class="aero-input-group">
+              <span>{{ form.name.label.text }} <b>*</b></span><i class="fas fa-user" aria-hidden="true"></i>
+              {{ form.name(class="form-control", value=name, autocomplete="username") }}
+              <small>{% trans %}This is the name other competitors will see.{% endtrans %}</small>
+            </label>
+            <label class="aero-input-group">
+              <span>{{ form.email.label.text }} <b>*</b></span><i class="fas fa-envelope" aria-hidden="true"></i>
+              {{ form.email(class="form-control", value=email, autocomplete="email") }}
+              <small>{% trans %}Your email is never shown publicly.{% endtrans %}</small>
+            </label>
+            <label class="aero-input-group">
+              <span>{{ form.password.label.text }} <b>*</b></span><i class="fas fa-key" aria-hidden="true"></i>
+              {{ form.password(class="form-control", value=password, autocomplete="new-password") }}
+            </label>
+            {{ form.nonce() }}
+            <div class="aero-extra-fields">{{ render_extra_fields(form.extra) }}</div>
+            {% set submit_label %}{% trans %}Create account{% endtrans %}{% endset %}
+            <div class="aero-auth-footer aero-auth-footer-end">{{ form.submit(class="btn aero-button-green", value=submit_label) }}</div>
+
+            {% if Configs.tos_or_privacy %}
+              <p class="aero-legal-copy">
+                {% trans trimmed privacy_link=Configs.privacy_link, tos_link=Configs.tos_link %}By registering, you agree to the <a href="{{ privacy_link }}" target="_blank">privacy policy</a> and <a href="{{ tos_link }}" target="_blank">terms of service</a>{% endtrans %}
+              </p>
+            {% endif %}
+          </form>
+        {% endwith %}
+        <p class="aero-auth-switch">{% trans %}Already have an account?{% endtrans %} <a href="{{ url_for('auth.login') }}">{% trans %}Sign in{% endtrans %}</a></p>
+      </div>
+    </section>
+  </div>
+{% endblock %}

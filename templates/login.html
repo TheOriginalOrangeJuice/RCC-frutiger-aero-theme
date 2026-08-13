@@ -1,0 +1,49 @@
+{% extends "base.html" %}
+
+{% block window_title %}{% trans %}Login{% endtrans %}{% endblock %}
+
+{% block content %}
+  <div class="aero-auth-screen">
+    <section class="aero-auth-window">
+      <div class="aero-auth-art" aria-hidden="true">
+        <span class="aero-auth-orb"><i class="fas fa-lock"></i></span>
+        <div><strong>{% trans %}Welcome back{% endtrans %}</strong><small>{% trans %}Continue where you left off.{% endtrans %}</small></div>
+      </div>
+
+      <div class="aero-auth-form">
+        <span class="aero-eyebrow"><i class="fas fa-shield-halved" aria-hidden="true"></i>{% trans %}Account access{% endtrans %}</span>
+        <h1>{% trans %}Sign in{% endtrans %}</h1>
+        <p>{% trans %}Enter your credentials to access the competition.{% endtrans %}</p>
+        {% include "components/errors.html" %}
+
+        {% if integrations.mlc() %}
+          <a class="btn aero-button-secondary w-100" href="{{ url_for('auth.oauth_login') }}">Login with Major League Cyber</a>
+          <div class="aero-divider"><span>{% trans %}or{% endtrans %}</span></div>
+        {% endif %}
+
+        {% with form = Forms.auth.LoginForm() %}
+          <form method="post" accept-charset="utf-8">
+            <label class="aero-input-group">
+              <span>{{ form.name.label.text }} <b>*</b></span>
+              <i class="fas fa-user" aria-hidden="true"></i>
+              {{ form.name(class="form-control", value=name, autocomplete="username email") }}
+            </label>
+            <label class="aero-input-group">
+              <span>{{ form.password.label.text }} <b>*</b></span>
+              <i class="fas fa-key" aria-hidden="true"></i>
+              {{ form.password(class="form-control", value=password, autocomplete="current-password") }}
+            </label>
+            <div class="aero-auth-footer">
+              <a href="{{ url_for('auth.reset_password') }}">{% trans %}Forgot your password?{% endtrans %}</a>
+              {% set submit_label %}{% trans %}Sign in{% endtrans %}{% endset %}
+              {{ form.submit(class="btn aero-button-primary", value=submit_label) }}
+            </div>
+            {{ form.nonce() }}
+          </form>
+        {% endwith %}
+
+        {% if registration_visible() %}<p class="aero-auth-switch">{% trans %}Need an account?{% endtrans %} <a href="{{ url_for('auth.register') }}">{% trans %}Register{% endtrans %}</a></p>{% endif %}
+      </div>
+    </section>
+  </div>
+{% endblock %}

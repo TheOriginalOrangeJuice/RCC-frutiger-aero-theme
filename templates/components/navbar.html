@@ -1,0 +1,131 @@
+<aside class="aero-brandbar" aria-label="{% trans %}Site navigation{% endtrans %}">
+  <div class="aero-brand-head">
+    <a href="{{ url_for('views.static_html', route='/') }}" class="aero-brand">
+      <span class="aero-brand-orb" aria-hidden="true"><i class="fas fa-globe-americas"></i></span>
+      <span class="aero-brand-copy">
+        <strong>{{ Configs.ctf_name }}</strong>
+        <small>{% trans %}Explore · Learn · Solve{% endtrans %}</small>
+      </span>
+    </a>
+    <button
+        class="aero-menu-toggle" type="button" data-bs-toggle="collapse" data-bs-target="#aero-navigation"
+        aria-controls="aero-navigation" aria-expanded="false" aria-label="{% trans %}Toggle navigation{% endtrans %}"
+    >
+      <i class="fas fa-bars" aria-hidden="true"></i>
+    </button>
+  </div>
+
+  <div class="aero-sidebar collapse" id="aero-navigation">
+  <div class="aero-menu-caption">
+    <span>{% trans %}Site menu{% endtrans %}</span>
+    <small>{% trans %}Choose a page{% endtrans %}</small>
+  </div>
+  <nav class="aero-primary-nav" aria-label="{% trans %}Primary navigation{% endtrans %}">
+    <a class="aero-nav-link {{ 'active' if request.endpoint == 'views.static_html' }}" href="{{ url_for('views.static_html', route='/') }}">
+      <span><i class="fas fa-house" aria-hidden="true"></i></span>{% trans %}Home{% endtrans %}
+    </a>
+
+    <a class="aero-nav-link aero-challenges-link {{ 'active' if request.endpoint and request.endpoint.startswith('challenges.') }}" href="{{ url_for('challenges.listing') }}">
+      <span><i class="fas fa-flag" aria-hidden="true"></i></span>{% trans %}Challenges{% endtrans %}
+    </a>
+
+    {% if Configs.account_visibility != 'admins' and Configs.score_visibility != 'admins' %}
+      <a class="aero-nav-link {{ 'active' if request.endpoint and request.endpoint.startswith('scoreboard.') }}" href="{{ url_for('scoreboard.listing') }}">
+        <span><i class="fas fa-ranking-star" aria-hidden="true"></i></span>{% trans %}Scoreboard{% endtrans %}
+      </a>
+    {% endif %}
+
+    {% if Configs.account_visibility != 'admins' %}
+      {% if Configs.user_mode == 'teams' %}
+        <a class="aero-nav-link {{ 'active' if request.endpoint and request.endpoint.startswith('teams.') }}" href="{{ url_for('teams.listing') }}">
+          <span><i class="fas fa-people-group" aria-hidden="true"></i></span>{% trans %}Teams{% endtrans %}
+        </a>
+      {% endif %}
+      <a class="aero-nav-link {{ 'active' if request.endpoint == 'users.listing' }}" href="{{ url_for('users.listing') }}">
+        <span><i class="fas fa-user-group" aria-hidden="true"></i></span>{% trans %}Players{% endtrans %}
+      </a>
+    {% endif %}
+
+    {% if authed() %}
+      <a class="aero-nav-link {{ 'active' if request.endpoint == 'users.private' }}" href="{{ url_for('users.private') }}">
+        <span><i class="fas fa-user-circle" aria-hidden="true"></i></span>{% trans %}My Profile{% endtrans %}
+      </a>
+      <a class="aero-nav-link {{ 'active' if request.endpoint == 'views.settings' }}" href="{{ url_for('views.settings') }}">
+        <span><i class="fas fa-gears" aria-hidden="true"></i></span>{% trans %}Settings{% endtrans %}
+      </a>
+    {% endif %}
+
+    {% if is_admin() %}
+      <a class="aero-nav-link" href="{{ url_for('admin.view') }}">
+        <span><i class="fas fa-wrench" aria-hidden="true"></i></span>{% trans %}Admin Panel{% endtrans %}
+      </a>
+    {% endif %}
+
+    {% for page in Plugins.user_menu_pages %}
+      <a class="aero-nav-link" href="{{ page.route }}" {% if page.link_target %}target="{{ page.link_target }}"{% endif %}>
+        <span><i class="fas fa-puzzle-piece" aria-hidden="true"></i></span>{{ page.title }}
+      </a>
+    {% endfor %}
+  </nav>
+
+  <div class="aero-portal-status" aria-label="{% trans %}Site status: online{% endtrans %}">
+    <span class="aero-portal-orb" aria-hidden="true"><i class="fas fa-sun"></i></span>
+    <span><strong>{% trans %}Clear skies{% endtrans %}</strong><small>{% trans %}Site online{% endtrans %}</small></span>
+    <i class="fas fa-signal" aria-hidden="true"></i>
+  </div>
+
+  <div class="aero-sidebar-tools">
+    <button
+        class="aero-nav-link aero-sound-toggle" type="button" data-aero-sound-toggle aria-pressed="false"
+        data-label-on="{% trans %}Sound effects on{% endtrans %}"
+        data-label-off="{% trans %}Sound effects off{% endtrans %}"
+        data-title-on="{% trans %}Disable sound effects{% endtrans %}"
+        data-title-off="{% trans %}Enable sound effects{% endtrans %}"
+        title="{% trans %}Enable sound effects{% endtrans %}"
+    >
+      <span><i class="fas fa-volume-xmark" aria-hidden="true"></i></span>
+      <span data-aero-sound-label>{% trans %}Sound effects off{% endtrans %}</span>
+    </button>
+
+    <div class="dropup">
+      <button class="aero-nav-link aero-language-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+        <span><i class="fas fa-language" aria-hidden="true"></i></span>{% trans %}Language{% endtrans %}
+      </button>
+      <form x-data="LanguageForm">
+        <ul class="dropdown-menu aero-dropdown">
+          {% set curr_lang = get_locale() %}
+          {%- for lang in Languages.names.items() %}
+            <li><button type="button" class="dropdown-item {{ 'active' if curr_lang == lang[0] }}" @click="set" value="{{ lang[0] }}">{{ lang[1] }}</button></li>
+          {%- endfor %}
+        </ul>
+      </form>
+    </div>
+  </div>
+
+  <div class="aero-account-dock">
+    {% if authed() %}
+      <div class="dropup w-100">
+        <button class="aero-account-button" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+          <span class="aero-avatar">{{ User.name[:1] | upper }}</span>
+          <span><strong>{{ User.name }}</strong><small>{% if Configs.user_mode == 'teams' and Team.name %}{{ Team.name }}{% else %}{% trans %}Participant{% endtrans %}{% endif %}</small></span>
+          <i class="fas fa-chevron-down" aria-hidden="true"></i>
+        </button>
+        <ul class="dropdown-menu aero-dropdown">
+          {% if is_admin() %}<li><a class="dropdown-item" href="{{ url_for('admin.view') }}"><i class="fas fa-wrench"></i>{% trans %}Admin Panel{% endtrans %}</a></li>{% endif %}
+          <li><a class="dropdown-item" href="{{ url_for('views.notifications') }}"><i class="fas fa-bell"></i>{% trans %}Notifications{% endtrans %}<span x-data x-show="$store.unread_count > 0" x-text="$store.unread_count" class="badge rounded-pill bg-danger ms-2"></span></a></li>
+          {% if Configs.user_mode == 'teams' %}<li><a class="dropdown-item" href="{{ url_for('teams.private') }}"><i class="fas fa-users"></i>{% trans %}My Team{% endtrans %}</a></li>{% endif %}
+          <li><a class="dropdown-item" href="{{ url_for('users.private') }}"><i class="fas fa-user-circle"></i>{% trans %}Profile{% endtrans %}</a></li>
+          <li><a class="dropdown-item" href="{{ url_for('views.settings') }}"><i class="fas fa-cogs"></i>{% trans %}Settings{% endtrans %}</a></li>
+          <li><hr class="dropdown-divider"></li>
+          <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}"><i class="fas fa-sign-out-alt"></i>{% trans %}Logout{% endtrans %}</a></li>
+        </ul>
+      </div>
+    {% else %}
+      <div class="aero-guest-actions">
+        {% if registration_visible() %}<a class="btn aero-button-secondary" href="{{ url_for('auth.register') }}">{% trans %}Register{% endtrans %}</a>{% endif %}
+        <a class="btn aero-button-primary" href="{{ url_for('auth.login') }}">{% trans %}Login{% endtrans %}</a>
+      </div>
+    {% endif %}
+  </div>
+  </div>
+</aside>
