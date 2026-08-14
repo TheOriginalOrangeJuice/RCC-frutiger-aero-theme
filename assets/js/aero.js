@@ -63,6 +63,34 @@ function playSolveChime() {
   window.setTimeout(() => context.close(), 900);
 }
 
+function playBubblePop() {
+  if (!soundEnabled()) {
+    return;
+  }
+
+  const AudioContext = window.AudioContext || window.webkitAudioContext;
+  if (!AudioContext) {
+    return;
+  }
+
+  const context = new AudioContext();
+  const oscillator = context.createOscillator();
+  const gain = context.createGain();
+
+  oscillator.type = "sine";
+  oscillator.frequency.setValueAtTime(390, context.currentTime);
+  oscillator.frequency.exponentialRampToValueAtTime(980, context.currentTime + 0.08);
+  gain.gain.setValueAtTime(0.0001, context.currentTime);
+  gain.gain.exponentialRampToValueAtTime(0.065, context.currentTime + 0.01);
+  gain.gain.exponentialRampToValueAtTime(0.0001, context.currentTime + 0.11);
+
+  oscillator.connect(gain);
+  gain.connect(context.destination);
+  oscillator.start();
+  oscillator.stop(context.currentTime + 0.12);
+  window.setTimeout(() => context.close(), 220);
+}
+
 function celebrateSolve() {
   playSolveChime();
 
@@ -123,6 +151,68 @@ window.addEventListener("DOMContentLoaded", () => {
     button.addEventListener("click", () => {
       window.localStorage.setItem(SOUND_STORAGE_KEY, (!soundEnabled()).toString());
       updateSoundControls();
+    });
+  });
+
+  const coarsePointer = window.matchMedia("(pointer: coarse)");
+  document.querySelectorAll(".aero-bubble-link").forEach(link => {
+    let touchCanNavigate = false;
+
+    link.addEventListener("pointerenter", event => {
+      if (event.pointerType === "mouse" && !link.classList.contains("active")) {
+        link.classList.add("is-popped");
+      }
+    });
+
+    link.addEventListener("pointerleave", event => {
+      if (event.pointerType === "mouse" && !link.classList.contains("active")) {
+        link.classList.remove("is-popped");
+      }
+    });
+
+    link.addEventListener("pointerdown", () => {
+      touchCanNavigate = coarsePointer.matches && link.classList.contains("is-popped");
+
+      if (coarsePointer.matches) {
+        document.querySelectorAll(".aero-bubble-link.is-popped").forEach(item => {
+          if (item !== link && !item.classList.contains("active")) {
+            item.classList.remove("is-popped");
+          }
+        });
+      }
+
+      link.classList.add("is-popped");
+    });
+
+    link.addEventListener("click", event => {
+      playBubblePop();
+
+      if (
+        !coarsePointer.matches ||
+        event.defaultPrevented ||
+        event.button !== 0 ||
+        event.metaKey ||
+        event.ctrlKey ||
+        event.shiftKey ||
+        event.altKey ||
+        link.target === "_blank"
+      ) {
+        return;
+      }
+
+      event.preventDefault();
+
+      if (!touchCanNavigate) {
+        return;
+      }
+
+      link.classList.add("is-launching");
+      window.setTimeout(
+        () => {
+          window.location.assign(link.href);
+        },
+        reduceMotion.matches ? 0 : 240,
+      );
     });
   });
 

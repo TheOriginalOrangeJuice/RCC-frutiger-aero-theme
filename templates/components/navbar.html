@@ -17,55 +17,49 @@
 
   <div class="aero-sidebar collapse" id="aero-navigation">
   <div class="aero-menu-caption">
-    <span>{% trans %}Site menu{% endtrans %}</span>
-    <small>{% trans %}Choose a page{% endtrans %}</small>
+    <span>{% trans %}Bubble dock{% endtrans %}</span>
+    <small>{% trans %}Hover to set it free{% endtrans %}</small>
   </div>
   <nav class="aero-primary-nav" aria-label="{% trans %}Primary navigation{% endtrans %}">
-    <a class="aero-nav-link {{ 'active' if request.endpoint == 'views.static_html' }}" href="{{ url_for('views.static_html', route='/') }}">
-      <span><i class="fas fa-house" aria-hidden="true"></i></span>{% trans %}Home{% endtrans %}
+    <a class="aero-nav-link aero-bubble-link aero-scene-home {{ 'active' if request.endpoint == 'views.static_html' }}" href="{{ url_for('views.static_html', route='/') }}">
+      <span class="aero-nav-bubble" aria-hidden="true">
+        <span class="aero-nav-scene aero-nav-scene-trapped"><i class="fas fa-house"></i></span>
+        <span class="aero-nav-scene aero-nav-scene-free"><i class="fas fa-rainbow"></i></span>
+        <span class="aero-bubble-splash"><i></i><i></i><i></i><i></i><i></i></span>
+      </span>
+      <span class="aero-nav-label"><strong>{% trans %}Home{% endtrans %}</strong><small>{% trans %}Sunny shore{% endtrans %}</small></span>
     </a>
 
-    <a class="aero-nav-link aero-challenges-link {{ 'active' if request.endpoint and request.endpoint.startswith('challenges.') }}" href="{{ url_for('challenges.listing') }}">
-      <span><i class="fas fa-flag" aria-hidden="true"></i></span>{% trans %}Challenges{% endtrans %}
+    <a class="aero-nav-link aero-bubble-link aero-scene-challenges aero-challenges-link {{ 'active' if request.endpoint and request.endpoint.startswith('challenges.') }}" href="{{ url_for('challenges.listing') }}">
+      <span class="aero-nav-bubble" aria-hidden="true">
+        <span class="aero-nav-scene aero-nav-scene-trapped"><i class="fas fa-lock"></i></span>
+        <span class="aero-nav-scene aero-nav-scene-free"><i class="fas fa-gift"></i></span>
+        <span class="aero-bubble-splash"><i></i><i></i><i></i><i></i><i></i></span>
+      </span>
+      <span class="aero-nav-label"><strong>{% trans %}Challenges{% endtrans %}</strong><small>{% trans %}Break it open{% endtrans %}</small></span>
     </a>
 
     {% if Configs.account_visibility != 'admins' and Configs.score_visibility != 'admins' %}
-      <a class="aero-nav-link {{ 'active' if request.endpoint and request.endpoint.startswith('scoreboard.') }}" href="{{ url_for('scoreboard.listing') }}">
-        <span><i class="fas fa-ranking-star" aria-hidden="true"></i></span>{% trans %}Scoreboard{% endtrans %}
+      <a class="aero-nav-link aero-bubble-link aero-scene-scoreboard {{ 'active' if request.endpoint and request.endpoint.startswith('scoreboard.') }}" href="{{ url_for('scoreboard.listing') }}">
+        <span class="aero-nav-bubble" aria-hidden="true">
+          <span class="aero-nav-scene aero-nav-scene-trapped"><i class="fas fa-ranking-star"></i></span>
+          <span class="aero-nav-scene aero-nav-scene-free"><i class="fas fa-trophy"></i></span>
+          <span class="aero-bubble-splash"><i></i><i></i><i></i><i></i><i></i></span>
+        </span>
+        <span class="aero-nav-label"><strong>{% trans %}Scoreboard{% endtrans %}</strong><small>{% trans %}Rise and shine{% endtrans %}</small></span>
       </a>
     {% endif %}
 
-    {% if Configs.account_visibility != 'admins' %}
-      {% if Configs.user_mode == 'teams' %}
-        <a class="aero-nav-link {{ 'active' if request.endpoint and request.endpoint.startswith('teams.') }}" href="{{ url_for('teams.listing') }}">
-          <span><i class="fas fa-people-group" aria-hidden="true"></i></span>{% trans %}Teams{% endtrans %}
-        </a>
-      {% endif %}
-      <a class="aero-nav-link {{ 'active' if request.endpoint == 'users.listing' }}" href="{{ url_for('users.listing') }}">
-        <span><i class="fas fa-user-group" aria-hidden="true"></i></span>{% trans %}Players{% endtrans %}
+    {% if Configs.account_visibility != 'admins' and Configs.user_mode == 'teams' %}
+      <a class="aero-nav-link aero-bubble-link aero-scene-teams {{ 'active' if request.endpoint and request.endpoint.startswith('teams.') }}" href="{{ url_for('teams.listing') }}">
+        <span class="aero-nav-bubble" aria-hidden="true">
+          <span class="aero-nav-scene aero-nav-scene-trapped"><i class="fas fa-people-group"></i></span>
+          <span class="aero-nav-scene aero-nav-scene-free"><i class="fas fa-water"></i></span>
+          <span class="aero-bubble-splash"><i></i><i></i><i></i><i></i><i></i></span>
+        </span>
+        <span class="aero-nav-label"><strong>{% trans %}Teams{% endtrans %}</strong><small>{% trans %}Leap together{% endtrans %}</small></span>
       </a>
     {% endif %}
-
-    {% if authed() %}
-      <a class="aero-nav-link {{ 'active' if request.endpoint == 'users.private' }}" href="{{ url_for('users.private') }}">
-        <span><i class="fas fa-user-circle" aria-hidden="true"></i></span>{% trans %}My Profile{% endtrans %}
-      </a>
-      <a class="aero-nav-link {{ 'active' if request.endpoint == 'views.settings' }}" href="{{ url_for('views.settings') }}">
-        <span><i class="fas fa-gears" aria-hidden="true"></i></span>{% trans %}Settings{% endtrans %}
-      </a>
-    {% endif %}
-
-    {% if is_admin() %}
-      <a class="aero-nav-link" href="{{ url_for('admin.view') }}">
-        <span><i class="fas fa-wrench" aria-hidden="true"></i></span>{% trans %}Admin Panel{% endtrans %}
-      </a>
-    {% endif %}
-
-    {% for page in Plugins.user_menu_pages %}
-      <a class="aero-nav-link" href="{{ page.route }}" {% if page.link_target %}target="{{ page.link_target }}"{% endif %}>
-        <span><i class="fas fa-puzzle-piece" aria-hidden="true"></i></span>{{ page.title }}
-      </a>
-    {% endfor %}
   </nav>
 
   <div class="aero-portal-status" aria-label="{% trans %}Site status: online{% endtrans %}">

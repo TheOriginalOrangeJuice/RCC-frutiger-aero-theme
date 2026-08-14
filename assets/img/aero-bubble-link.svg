@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 400" preserveAspectRatio="none">
+  <defs>
+    <linearGradient id="tube" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#dfffff" stop-opacity=".78"/>
+      <stop offset=".45" stop-color="#79e9ff" stop-opacity=".48"/>
+      <stop offset="1" stop-color="#b9ffdf" stop-opacity=".66"/>
+    </linearGradient>
+  </defs>
+  <path d="M25 50 C25 92 75 108 75 150 S25 208 25 250 S75 308 75 350" fill="none" stroke="#00678f" stroke-opacity=".22" stroke-width="10" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+  <path d="M25 50 C25 92 75 108 75 150 S25 208 25 250 S75 308 75 350" fill="none" stroke="url(#tube)" stroke-width="6" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+  <path d="M25 50 C25 92 75 108 75 150 S25 208 25 250 S75 308 75 350" fill="none" stroke="#fff" stroke-opacity=".72" stroke-width="1.4" stroke-linecap="round" vector-effect="non-scaling-stroke"/>
+  <path d="M25 50 C25 92 75 108 75 150 S25 208 25 250 S75 308 75 350" fill="none" stroke="#fff" stroke-opacity=".68" stroke-width="3" stroke-linecap="round" stroke-dasharray="1 24" vector-effect="non-scaling-stroke"/>
+</svg>

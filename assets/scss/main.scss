@@ -4828,3 +4828,495 @@ body.aero-body::after {
       radial-gradient(circle at 18% 8%, rgba(255, 255, 255, 0.28), transparent 24%);
   }
 }
+
+/* Bubble dock: contained scenes pop into joyful, released destinations. */
+.aero-bubble-link {
+  --aero-scene-y: 0%;
+}
+
+.aero-primary-nav .aero-bubble-link > .aero-nav-bubble {
+  --aero-trapped-x: 5.37%;
+  --aero-free-x: 35.12%;
+  position: relative;
+  display: block;
+  width: 78px;
+  height: 78px;
+  flex: 0 0 78px;
+  isolation: isolate;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  box-shadow: none;
+  filter: drop-shadow(0 5px 7px rgba(0, 45, 94, 0.32));
+  transform: translateZ(0);
+  transition:
+    filter 0.28s ease,
+    transform 0.45s cubic-bezier(0.17, 0.89, 0.32, 1.42);
+}
+
+.aero-primary-nav .aero-bubble-link.active > .aero-nav-bubble {
+  border: 0;
+  background: transparent;
+  box-shadow: none;
+}
+
+.aero-bubble-link .aero-nav-bubble::before,
+.aero-bubble-link .aero-nav-bubble::after {
+  content: "";
+  position: absolute;
+  pointer-events: none;
+  border-radius: 50%;
+}
+
+.aero-bubble-link .aero-nav-bubble::before {
+  z-index: 4;
+  inset: -2px;
+  border: 2px solid rgba(237, 254, 255, 0.94);
+  background:
+    radial-gradient(circle at 27% 19%, rgba(255, 255, 255, 0.98) 0 5%, transparent 6%),
+    radial-gradient(circle at 71% 76%, rgba(132, 238, 255, 0.42), transparent 28%),
+    linear-gradient(135deg, rgba(255, 255, 255, 0.2), rgba(44, 192, 235, 0.06));
+  box-shadow:
+    inset 7px 7px 13px rgba(255, 255, 255, 0.42),
+    inset -7px -8px 12px rgba(0, 85, 168, 0.18),
+    0 0 0 1px rgba(5, 125, 195, 0.3),
+    0 0 15px rgba(132, 239, 255, 0.42);
+  transition:
+    opacity 0.16s ease,
+    transform 0.34s cubic-bezier(0.2, 0.9, 0.35, 1.4);
+}
+
+.aero-bubble-link .aero-nav-bubble::after {
+  z-index: 5;
+  top: 11px;
+  left: 15px;
+  width: 27px;
+  height: 12px;
+  background: rgba(255, 255, 255, 0.82);
+  filter: blur(1.5px);
+  opacity: 0.85;
+  transform: rotate(-29deg);
+  transition:
+    opacity 0.12s ease,
+    transform 0.32s ease;
+}
+
+.aero-nav-scene {
+  position: absolute;
+  z-index: 1;
+  inset: 3px;
+  display: grid;
+  overflow: hidden;
+  place-items: center;
+  border-radius: 50%;
+  background-color: #087fc1;
+  background-image: url("../img/aero-nav-scenes-primary.webp");
+  background-position: var(--aero-trapped-x) var(--aero-scene-y);
+  background-size: 625% 500%;
+  transition:
+    opacity 0.18s ease,
+    transform 0.48s cubic-bezier(0.18, 0.9, 0.25, 1.35);
+}
+
+.aero-nav-scene > i {
+  display: none;
+  color: #fff;
+  font-size: 1.55rem;
+  text-shadow: 0 2px 5px rgba(0, 49, 93, 0.6);
+}
+
+.aero-nav-scene-free {
+  z-index: 2;
+  background-position: var(--aero-free-x) var(--aero-scene-y);
+  opacity: 0;
+  transform: scale(0.42) rotate(-9deg);
+}
+
+.aero-scene-home {
+  --aero-scene-y: 0%;
+}
+
+.aero-scene-challenges {
+  --aero-scene-y: 25%;
+}
+
+.aero-scene-scoreboard {
+  --aero-scene-y: 50%;
+}
+
+.aero-scene-teams {
+  --aero-scene-y: 75%;
+}
+
+.aero-bubble-splash {
+  position: absolute;
+  z-index: 7;
+  inset: 50%;
+  pointer-events: none;
+}
+
+.aero-bubble-splash i {
+  --drop-x: 0px;
+  --drop-y: -49px;
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  margin: -4px;
+  border: 1px solid rgba(255, 255, 255, 0.94);
+  border-radius: 50%;
+  background: radial-gradient(circle at 30% 25%, #fff, #62dff3 42%, #078ac9 74%);
+  box-shadow: 0 0 8px rgba(175, 249, 255, 0.85);
+  opacity: 0;
+  transform: translate(0, 0) scale(0.15);
+}
+
+.aero-bubble-splash i:nth-child(2) {
+  --drop-x: 46px;
+  --drop-y: -24px;
+  width: 6px;
+  height: 6px;
+}
+
+.aero-bubble-splash i:nth-child(3) {
+  --drop-x: 48px;
+  --drop-y: 31px;
+  width: 10px;
+  height: 10px;
+}
+
+.aero-bubble-splash i:nth-child(4) {
+  --drop-x: -43px;
+  --drop-y: 32px;
+  width: 7px;
+  height: 7px;
+}
+
+.aero-bubble-splash i:nth-child(5) {
+  --drop-x: -48px;
+  --drop-y: -19px;
+  width: 5px;
+  height: 5px;
+}
+
+.aero-nav-label {
+  position: relative;
+  z-index: 8;
+  display: grid;
+  min-width: 0;
+  color: #fff;
+  line-height: 1.05;
+  text-align: center;
+  text-shadow: 0 1px 3px rgba(0, 45, 86, 0.78);
+}
+
+.aero-nav-label strong {
+  overflow: hidden;
+  font-family: "Raleway", "Segoe UI", sans-serif;
+  font-size: 0.69rem;
+  font-weight: 800;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.aero-nav-label small {
+  max-height: 0;
+  margin-top: 0;
+  overflow: hidden;
+  color: #e8fcff;
+  font-size: 0.52rem;
+  font-weight: 700;
+  opacity: 0;
+  transform: translateY(-4px);
+  transition:
+    max-height 0.25s ease,
+    margin 0.25s ease,
+    opacity 0.25s ease,
+    transform 0.25s ease;
+}
+
+.aero-bubble-link:is(:hover, :focus-visible, .is-popped, .active) .aero-nav-bubble {
+  filter: drop-shadow(0 8px 8px rgba(0, 55, 95, 0.26))
+    drop-shadow(0 0 10px rgba(183, 252, 255, 0.65));
+  transform: translateY(-5px) scale(1.08) rotate(1.5deg);
+}
+
+.aero-bubble-link:is(:hover, :focus-visible, .is-popped, .active)
+  .aero-nav-bubble::before {
+  opacity: 0;
+  transform: scale(1.42);
+}
+
+.aero-bubble-link:is(:hover, :focus-visible, .is-popped, .active)
+  .aero-nav-bubble::after {
+  opacity: 0;
+  transform: translate(-12px, -14px) scale(1.5) rotate(-45deg);
+}
+
+.aero-bubble-link:is(:hover, :focus-visible, .is-popped, .active)
+  .aero-nav-scene-trapped {
+  opacity: 0;
+  transform: scale(0.38) rotate(11deg);
+}
+
+.aero-bubble-link:is(:hover, :focus-visible, .is-popped, .active) .aero-nav-scene-free {
+  opacity: 1;
+  transform: scale(1) rotate(0);
+}
+
+.aero-bubble-link:is(:hover, :focus-visible, .is-popped) .aero-bubble-splash i {
+  animation: aero-nav-droplet 0.56s cubic-bezier(0.15, 0.7, 0.35, 1) both;
+}
+
+.aero-bubble-link:is(:hover, :focus-visible, .is-popped)
+  .aero-bubble-splash
+  i:nth-child(2) {
+  animation-delay: 0.025s;
+}
+
+.aero-bubble-link:is(:hover, :focus-visible, .is-popped)
+  .aero-bubble-splash
+  i:nth-child(3) {
+  animation-delay: 0.06s;
+}
+
+.aero-bubble-link:is(:hover, :focus-visible, .is-popped)
+  .aero-bubble-splash
+  i:nth-child(4) {
+  animation-delay: 0.09s;
+}
+
+.aero-bubble-link:is(:hover, :focus-visible, .is-popped)
+  .aero-bubble-splash
+  i:nth-child(5) {
+  animation-delay: 0.12s;
+}
+
+.aero-bubble-link:is(:hover, :focus-visible, .is-popped, .active)
+  .aero-nav-label
+  small {
+  max-height: 1rem;
+  margin-top: 0.18rem;
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.aero-bubble-link.is-launching {
+  animation: aero-nav-launch 0.24s ease both;
+}
+
+@keyframes aero-nav-droplet {
+  0% {
+    opacity: 0;
+    transform: translate(0, 0) scale(0.15);
+  }
+  24% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+    transform: translate(var(--drop-x), var(--drop-y)) scale(1.08);
+  }
+}
+
+@keyframes aero-nav-launch {
+  0%,
+  100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(0.88);
+  }
+}
+
+@media (min-width: 992px) {
+  .aero-workspace {
+    grid-template-columns: 280px minmax(0, 1fr);
+  }
+
+  .aero-menu-caption {
+    align-items: end;
+    grid-template-columns: 1fr auto;
+  }
+
+  .aero-menu-caption small {
+    margin-top: 0;
+    text-transform: none;
+  }
+
+  .aero-primary-nav {
+    --aero-dock-bubble-size: clamp(70px, 21cqh, 118px);
+    position: relative;
+    display: grid;
+    flex: 1 1 auto;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: repeat(4, minmax(0, 1fr));
+    align-content: stretch;
+    gap: clamp(0.02rem, 0.35cqh, 0.3rem);
+    overflow-x: hidden;
+    overflow-y: hidden;
+    padding: clamp(0.08rem, 0.45cqh, 0.4rem) 0.38rem;
+    isolation: isolate;
+    container-type: size;
+  }
+
+  .aero-primary-nav::before {
+    content: "";
+    position: absolute;
+    z-index: 0;
+    inset: 0.12rem 0.38rem;
+    pointer-events: none;
+    background: url("../img/aero-bubble-link.svg") center / 100% 100% no-repeat;
+    filter: drop-shadow(0 0 5px rgba(163, 248, 255, 0.35));
+    opacity: 0.72;
+  }
+
+  .aero-primary-nav .aero-bubble-link {
+    display: flex;
+    width: 100%;
+    min-width: 0;
+    min-height: 0;
+    z-index: 1;
+    justify-content: center;
+    flex-direction: column;
+    gap: clamp(0.04rem, 0.4cqh, 0.18rem);
+    overflow: visible;
+    padding-block: 0.04rem;
+    padding-inline: clamp(0.5rem, 4.2cqw, 1rem);
+    color: #fff;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    text-align: center;
+    text-decoration: none;
+    transition:
+      background 0.3s ease,
+      transform 0.3s ease;
+  }
+
+  .aero-primary-nav .aero-bubble-link:nth-child(odd) {
+    align-items: flex-start;
+  }
+
+  .aero-primary-nav .aero-bubble-link:nth-child(even) {
+    align-items: flex-end;
+  }
+
+  .aero-primary-nav .aero-bubble-link::before,
+  .aero-primary-nav .aero-bubble-link::after {
+    display: none;
+  }
+
+  .aero-primary-nav .aero-bubble-link > .aero-nav-bubble {
+    width: var(--aero-dock-bubble-size);
+    height: var(--aero-dock-bubble-size);
+    flex-basis: var(--aero-dock-bubble-size);
+  }
+
+  .aero-primary-nav .aero-nav-label {
+    width: var(--aero-dock-bubble-size);
+    text-align: center;
+  }
+
+  .aero-primary-nav .aero-nav-label strong {
+    font-size: clamp(0.7rem, 2.4cqh, 0.88rem);
+  }
+
+  .aero-primary-nav .aero-nav-label small {
+    display: none;
+  }
+
+  .aero-primary-nav .aero-bubble-link:is(:hover, :focus-visible, .is-popped) {
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    transform: none;
+  }
+
+  .aero-primary-nav .aero-bubble-link:focus-visible {
+    border-radius: 22px;
+    outline: 2px solid rgba(225, 255, 255, 0.82);
+    outline-offset: -3px;
+  }
+
+  .aero-primary-nav .aero-bubble-link.active {
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+    animation: none;
+  }
+
+  .aero-primary-nav .aero-bubble-link.active .aero-nav-label strong {
+    color: #eaffd4;
+  }
+}
+
+@media (max-width: 991.98px) {
+  .aero-primary-nav .aero-bubble-link {
+    display: grid;
+    min-height: 106px;
+    grid-template-columns: 88px minmax(0, 1fr);
+    gap: 0.5rem;
+    overflow: visible;
+    padding: 0.42rem 0.6rem;
+  }
+
+  .aero-primary-nav .aero-bubble-link::after {
+    display: none;
+  }
+
+  .aero-primary-nav .aero-bubble-link > .aero-nav-bubble {
+    width: 84px;
+    height: 84px;
+    flex-basis: 84px;
+  }
+
+  .aero-bubble-link .aero-nav-label {
+    text-align: left;
+  }
+
+  .aero-bubble-link .aero-nav-label strong {
+    font-size: 0.9rem;
+  }
+
+  .aero-bubble-link .aero-nav-label small {
+    max-height: 1rem;
+    margin-top: 0.22rem;
+    font-size: 0.62rem;
+    opacity: 0.82;
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aero-bubble-link,
+  .aero-bubble-link *,
+  .aero-bubble-link *::before,
+  .aero-bubble-link *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.001ms !important;
+  }
+
+  .aero-bubble-link:is(:hover, :focus-visible, .is-popped, .active) .aero-nav-bubble {
+    transform: none;
+  }
+
+  .aero-bubble-splash {
+    display: none;
+  }
+}
+
+@media (forced-colors: active) {
+  .aero-nav-scene {
+    background-image: none !important;
+  }
+
+  .aero-nav-scene > i {
+    display: block;
+  }
+
+  .aero-bubble-link .aero-nav-bubble::before {
+    border: 2px solid ButtonText;
+  }
+}
