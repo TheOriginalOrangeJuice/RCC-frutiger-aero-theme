@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="{{ get_locale() }}" data-bs-theme="light">
 <head>
-  <title>{{ title or Configs.ctf_name }}</title>
+  <title>{% block window_title %}{{ title or Configs.ctf_name }}{% endblock %}{% if self.window_title() | trim != Configs.ctf_name %} · {{ Configs.ctf_name }}{% endif %}</title>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <meta name="theme-color" content="#087fc1">
@@ -30,8 +30,9 @@
       'end': {{ Configs.end | tojson }},
       'themeSettings': {{ Configs.theme_settings | tojson }},
       'eventSounds': [
-        "{{ url_for('views.themes_beta', theme=get_ctf_theme(), path='sounds/notification.webm') }}",
-        "{{ url_for('views.themes_beta', theme=get_ctf_theme(), path='sounds/notification.mp3') }}",
+        {#- ctfd-js prefixes urlRoot itself, so strip it here to avoid doubling it under a sub-path. #}
+        "{{ url_for('views.themes_beta', theme=get_ctf_theme(), path='sounds/notification.webm')[request.script_root | length:] }}",
+        "{{ url_for('views.themes_beta', theme=get_ctf_theme(), path='sounds/notification.mp3')[request.script_root | length:] }}",
       ],
     };
   </script>
@@ -62,18 +63,18 @@
   </div>
 
   <div class="aero-app-shell">
-    <section class="aero-workspace" aria-label="{{ Configs.ctf_name }}">
+    <div class="aero-workspace">
       {% include "components/navbar.html" %}
-      <main id="aero-main" role="main" tabindex="-1">
+      <main id="aero-main" tabindex="-1">
         {% block content %}{% endblock %}
       </main>
 
       <footer class="aero-statusbar">
         <span class="aero-footer-status"><span></span>{% trans %}Online{% endtrans %}</span>
-        <small><time data-aero-clock aria-label="{% trans %}Local time{% endtrans %}"></time></small>
+        <small><span class="visually-hidden">{% trans %}Local time{% endtrans %} </span><time data-aero-clock></time></small>
         <small><a href="https://ctfd.io">{% trans %}Powered by CTFd{% endtrans %}</a></small>
       </footer>
-    </section>
+    </div>
   </div>
 
   {% include "components/snackbar.html" %}

@@ -438,6 +438,8 @@ Alpine.data("ChallengeBoard", () => ({
 
     this.loadError = "";
     this.loadingChallenge = challengeId;
+    // Bootstrap only restores focus for data-bs-toggle openers, so do it here.
+    const opener = document.activeElement;
     let challengeDisplayed = false;
     try {
       await CTFd.pages.challenge.displayChallenge(challengeId, challenge => {
@@ -449,6 +451,18 @@ Alpine.data("ChallengeBoard", () => ({
           const modal = Modal.getOrCreateInstance("[x-ref='challengeWindow']");
           const modalElement = modal._element;
           const showModal = () => {
+            // Registered here (not before deferring) so it is bound to this
+            // dialog's close rather than the previous one's.
+            modalElement.addEventListener(
+              "hidden.bs.modal",
+              () => {
+                history.replaceState(null, null, window.location.pathname);
+                if (opener && opener !== document.body && opener.isConnected) {
+                  opener.focus({ preventScroll: true });
+                }
+              },
+              { once: true },
+            );
             modal.show();
             history.replaceState(
               null,
@@ -457,12 +471,6 @@ Alpine.data("ChallengeBoard", () => ({
             );
             this.loadingChallenge = null;
           };
-
-          modalElement.addEventListener(
-            "hidden.bs.modal",
-            () => history.replaceState(null, null, window.location.pathname),
-            { once: true },
-          );
 
           // A card can be selected while the previous modal is finishing its
           // close animation. Bootstrap ignores show() during that transition,

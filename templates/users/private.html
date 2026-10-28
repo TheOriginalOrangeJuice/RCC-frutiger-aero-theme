@@ -75,9 +75,9 @@
 
       <div class="pt-3">
         {% if user.website %}
-          <a href="{{ user.website }}" target="_blank" style="color: inherit;" rel="noopener">
-            <i
-                class="fas fa-external-link-alt fa-2x px-2" data-toggle="tooltip" data-placement="top"
+          <a href="{{ user.website }}" target="_blank" style="color: inherit;" rel="noopener" aria-label="{% trans %}Website{% endtrans %}">
+            <i aria-hidden="true"
+                class="fas fa-external-link-alt fa-2x px-2" data-bs-toggle="tooltip" data-bs-placement="top"
                 title="{{ user.website }}"
             ></i>
           </a>
@@ -121,10 +121,10 @@
           <table class="table table-striped align-middle">
             <thead>
             <tr>
-              <th>{% trans %}Challenge{% endtrans %}</th>
-              <th class="d-none d-md-block d-lg-block">{% trans %}Category{% endtrans %}</th>
-              <th>{% trans %}Value{% endtrans %}</th>
-              <th>{% trans %}Time{% endtrans %}</th>
+              <th scope="col">{% trans %}Challenge{% endtrans %}</th>
+              <th scope="col" class="d-none d-md-block d-lg-block">{% trans %}Category{% endtrans %}</th>
+              <th scope="col">{% trans %}Value{% endtrans %}</th>
+              <th scope="col">{% trans %}Time{% endtrans %}</th>
             </tr>
             </thead>
             <tbody>

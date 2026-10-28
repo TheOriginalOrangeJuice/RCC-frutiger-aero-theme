@@ -1,3 +1,5 @@
+import CTFd from "@ctfdio/ctfd-js";
+
 const SOUND_STORAGE_KEY = "ctfd-frutiger-aero-sound";
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
 let lastCelebratedResponse = null;
@@ -11,27 +13,68 @@ window.aeroHandleSubmissionResponse = response => {
   window.dispatchEvent(new CustomEvent("aero:solve"));
 };
 
+// localStorage throws in some privacy modes; sound settings are a convenience.
+function readSoundSetting() {
+  try {
+    return window.localStorage.getItem(SOUND_STORAGE_KEY);
+  } catch {
+    return null;
+  }
+}
+
+function writeSoundSetting(value) {
+  try {
+    window.localStorage.setItem(SOUND_STORAGE_KEY, value);
+  } catch {
+    // Setting simply won't persist across pages.
+  }
+}
+
+let soundSetting = readSoundSetting();
+
 function soundEnabled() {
-  return window.localStorage.getItem(SOUND_STORAGE_KEY) === "true";
+  return soundSetting === "true";
+}
+
+// The admin-chosen notification chime plays by default, but a participant who
+// explicitly switches sound off gets silence everywhere.
+function syncNotificationSound() {
+  CTFd.events?.howl?.mute(soundSetting === "false");
+}
+
+let audioContext = null;
+
+// One shared context: browsers cap concurrent contexts, and Safari only lets a
+// context start after it has been resumed inside a user gesture.
+function getAudioContext() {
+  const AudioContext = window.AudioContext || window.webkitAudioContext;
+  if (!AudioContext) {
+    return null;
+  }
+
+  audioContext ??= new AudioContext();
+  if (audioContext.state === "suspended") {
+    audioContext.resume().catch(() => {});
+  }
+  return audioContext;
 }
 
 function updateSoundControls() {
   const enabled = soundEnabled();
 
   document.querySelectorAll("[data-aero-sound-toggle]").forEach(button => {
-    const labelOn = button.dataset.labelOn;
-    const labelOff = button.dataset.labelOff;
     button.setAttribute("aria-pressed", enabled ? "true" : "false");
-    button.title = enabled ? button.dataset.titleOn : button.dataset.titleOff;
 
     const icon = button.querySelector("i");
     icon?.classList.toggle("fa-volume-high", enabled);
     icon?.classList.toggle("fa-volume-xmark", !enabled);
 
-    button.querySelectorAll("[data-aero-sound-label]").forEach(label => {
-      label.textContent = enabled ? labelOn : labelOff;
+    button.querySelectorAll("[data-aero-sound-state]").forEach(state => {
+      state.textContent = enabled ? state.dataset.on : state.dataset.off;
     });
   });
+
+  syncNotificationSound();
 }
 
 function playSolveChime() {
@@ -39,12 +82,10 @@ function playSolveChime() {
     return;
   }
 
-  const AudioContext = window.AudioContext || window.webkitAudioContext;
-  if (!AudioContext) {
+  const context = getAudioContext();
+  if (!context) {
     return;
   }
-
-  const context = new AudioContext();
   const gain = context.createGain();
   gain.gain.setValueAtTime(0.0001, context.currentTime);
   gain.gain.exponentialRampToValueAtTime(0.13, context.currentTime + 0.02);
@@ -59,8 +100,6 @@ function playSolveChime() {
     oscillator.start(context.currentTime + index * 0.1);
     oscillator.stop(context.currentTime + 0.72);
   });
-
-  window.setTimeout(() => context.close(), 900);
 }
 
 function playBubblePop() {
@@ -68,12 +107,10 @@ function playBubblePop() {
     return;
   }
 
-  const AudioContext = window.AudioContext || window.webkitAudioContext;
-  if (!AudioContext) {
+  const context = getAudioContext();
+  if (!context) {
     return;
   }
-
-  const context = new AudioContext();
   const oscillator = context.createOscillator();
   const gain = context.createGain();
 
@@ -88,7 +125,6 @@ function playBubblePop() {
   gain.connect(context.destination);
   oscillator.start();
   oscillator.stop(context.currentTime + 0.12);
-  window.setTimeout(() => context.close(), 220);
 }
 
 function celebrateSolve() {
@@ -111,24 +147,27 @@ function celebrateSolve() {
 }
 
 window.addEventListener("DOMContentLoaded", () => {
-  document.documentElement.setAttribute("data-bs-theme", "light");
-
   const root = document.documentElement;
   const finePointer = window.matchMedia("(pointer: fine)");
   let pointerFrame = 0;
 
+  let pointerX = 0;
+  let pointerY = 0;
+
   const updateAmbientParallax = event => {
+    pointerX = event.clientX;
+    pointerY = event.clientY;
+
     if (pointerFrame || reduceMotion.matches || !finePointer.matches) {
       return;
     }
 
+    // Read the latest position inside the frame, not the first event's.
     pointerFrame = window.requestAnimationFrame(() => {
-      const horizontal = event.clientX / window.innerWidth - 0.5;
-      const vertical = event.clientY / window.innerHeight - 0.5;
+      const horizontal = pointerX / window.innerWidth - 0.5;
+      const vertical = pointerY / window.innerHeight - 0.5;
       root.style.setProperty("--aero-parallax-x", `${horizontal * 12}px`);
       root.style.setProperty("--aero-parallax-y", `${vertical * 8}px`);
-      root.style.setProperty("--aero-pointer-x", `${event.clientX}px`);
-      root.style.setProperty("--aero-pointer-y", `${event.clientY}px`);
       pointerFrame = 0;
     });
   };
@@ -136,59 +175,79 @@ window.addEventListener("DOMContentLoaded", () => {
   window.addEventListener("pointermove", updateAmbientParallax, { passive: true });
 
   const clock = document.querySelector("[data-aero-clock]");
-  const updateClock = () => {
-    if (clock) {
-      clock.textContent = new Intl.DateTimeFormat(undefined, {
-        hour: "numeric",
-        minute: "2-digit",
-      }).format(new Date());
-    }
-  };
-  updateClock();
-  window.setInterval(updateClock, 30000);
+  if (clock) {
+    const clockFormat = new Intl.DateTimeFormat(undefined, {
+      hour: "numeric",
+      minute: "2-digit",
+    });
+    const updateClock = () => {
+      const now = new Date();
+      clock.textContent = clockFormat.format(now);
+      clock.dateTime = now.toISOString();
+    };
+    // Tick on the minute boundary so the displayed time is never stale.
+    const tick = () => {
+      updateClock();
+      window.setTimeout(tick, 60000 - (Date.now() % 60000) + 50);
+    };
+    tick();
+    document.addEventListener("visibilitychange", () => {
+      if (!document.hidden) {
+        updateClock();
+      }
+    });
+  }
 
   document.querySelectorAll("[data-aero-sound-toggle]").forEach(button => {
     button.addEventListener("click", () => {
-      window.localStorage.setItem(SOUND_STORAGE_KEY, (!soundEnabled()).toString());
+      soundSetting = soundEnabled() ? "false" : "true";
+      writeSoundSetting(soundSetting);
       updateSoundControls();
+      // Confirms the change and unlocks audio inside this user gesture.
+      playBubblePop();
     });
   });
 
   const coarsePointer = window.matchMedia("(pointer: coarse)");
   document.querySelectorAll(".aero-bubble-link").forEach(link => {
-    let touchCanNavigate = false;
+    let lastPointerType = "";
 
     link.addEventListener("pointerenter", event => {
       if (event.pointerType === "mouse" && !link.classList.contains("active")) {
         link.classList.add("is-popped");
+        playBubblePop();
       }
     });
 
     link.addEventListener("pointerleave", event => {
-      if (event.pointerType === "mouse" && !link.classList.contains("active")) {
+      if (!link.classList.contains("active")) {
         link.classList.remove("is-popped");
       }
     });
 
-    link.addEventListener("pointerdown", () => {
-      touchCanNavigate = coarsePointer.matches && link.classList.contains("is-popped");
-
-      if (coarsePointer.matches) {
-        document.querySelectorAll(".aero-bubble-link.is-popped").forEach(item => {
-          if (item !== link && !item.classList.contains("active")) {
-            item.classList.remove("is-popped");
-          }
-        });
+    link.addEventListener("pointercancel", () => {
+      if (!link.classList.contains("active")) {
+        link.classList.remove("is-popped");
       }
+    });
 
-      link.classList.add("is-popped");
+    link.addEventListener("pointerdown", event => {
+      lastPointerType = event.pointerType;
+      if (event.pointerType !== "mouse") {
+        link.classList.add("is-popped");
+        playBubblePop();
+      }
     });
 
     link.addEventListener("click", event => {
-      playBubblePop();
+      // Keyboard, screen readers and scripted clicks have no pointerdown.
+      const fromTouch =
+        lastPointerType !== "" && lastPointerType !== "mouse" && event.detail !== 0;
+      lastPointerType = "";
 
       if (
-        !coarsePointer.matches ||
+        !fromTouch ||
+        reduceMotion.matches ||
         event.defaultPrevented ||
         event.button !== 0 ||
         event.metaKey ||
@@ -200,19 +259,20 @@ window.addEventListener("DOMContentLoaded", () => {
         return;
       }
 
+      // Let the bubble visibly burst before the page changes.
       event.preventDefault();
-
-      if (!touchCanNavigate) {
-        return;
-      }
-
       link.classList.add("is-launching");
-      window.setTimeout(
-        () => {
-          window.location.assign(link.href);
-        },
-        reduceMotion.matches ? 0 : 240,
-      );
+      window.setTimeout(() => window.location.assign(link.href), 240);
+    });
+  });
+
+  // Coming back via the back/forward cache must not show a half-launched bubble.
+  window.addEventListener("pageshow", () => {
+    document.querySelectorAll(".aero-bubble-link").forEach(link => {
+      link.classList.remove("is-launching");
+      if (!link.classList.contains("active")) {
+        link.classList.remove("is-popped");
+      }
     });
   });
 

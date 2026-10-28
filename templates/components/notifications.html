@@ -14,18 +14,18 @@
 
 
 <div x-data>
-  <div class="modal fade" x-ref="modal" tabindex="-1">
+  <div class="modal fade" x-ref="modal" tabindex="-1" aria-labelledby="aero-notice-title">
     <div class="modal-dialog">
       <div class="modal-content">
         <div class="modal-header">
-          <h5 class="modal-title" x-text="$store.modal.title"></h5>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          <h5 class="modal-title" id="aero-notice-title" x-text="$store.modal.title"></h5>
+          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="{% trans %}Close{% endtrans %}"></button>
         </div>
         <div class="modal-body">
           <p x-html="$store.modal.html"></p>
         </div>
         <div class="modal-footer">
-          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Got it!</button>
+          <button type="button" class="btn btn-primary" data-bs-dismiss="modal">{% trans %}Got it!{% endtrans %}</button>
         </div>
       </div>
     </div>

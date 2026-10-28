@@ -80,7 +80,7 @@
 
                 <template x-for="(msg, idx) in errors" :key="idx">
                   <div class="alert alert-danger alert-dismissible" role="alert">
-                    <span class="sr-only">{% trans %}Error:{% endtrans %}</span>
+                    <span class="visually-hidden">{% trans %}Error:{% endtrans %}</span>
                     <span x-text="msg"></span>
 
                     <button type="button" class="cursor-pointer btn-close" data-bs-dismiss="alert" aria-label="Close">
@@ -116,7 +116,7 @@
                 {% endfor %}
                 {{ form.captain_id(class="form-select mb-2") }}
               </div>
-              <div id="results">
+              <div id="captain-results">
                 <div
                     class="alert alert-success alert-dismissible submit-row"
                     role="alert"
@@ -130,7 +130,7 @@
                 </div>
                 <template x-for="(msg, idx) in errors" :key="idx">
                   <div class="alert alert-danger alert-dismissible" role="alert">
-                    <span class="sr-only">Error:</span>
+                    <span class="visually-hidden">{% trans %}Error:{% endtrans %}</span>
                     <span x-text="msg"></span>
                     <button type="button" class="cursor-pointer btn-close" data-bs-dismiss="alert" aria-label="Close">
                     </button>
@@ -162,8 +162,8 @@
                 <div class="input-group mb-3">
                   {{ form.link(id="team-invite-link", class="form-control", **{"x-ref": "link", "x-bind:value": "$store.inviteToken"}) }}
 
-                  <button class="btn btn-outline-secondary px-3" type="button" @click="copy()">
-                    <i class="fas fa-clipboard"></i>
+                  <button class="btn btn-outline-secondary px-3" type="button" @click="copy()" aria-label="{% trans %}Copy to clipboard{% endtrans %}">
+                    <i class="fas fa-clipboard" aria-hidden="true"></i>
                   </button>
                 </div>
 
@@ -195,7 +195,7 @@
           <div class="mt-3">
             <template x-for="(msg, idx) in errors" :key="idx">
               <div class="alert alert-danger" role="alert">
-                <span class="sr-only">{% trans %}Error:{% endtrans %}</span>
+                <span class="visually-hidden">{% trans %}Error:{% endtrans %}</span>
                 <span x-text="msg"></span>
               </div>
             </template>
@@ -212,7 +212,7 @@
 
   <div class="jumbotron">
     <div class="container">
-      <h1 id="team-id" team-id="{{ team.id }}">{{ team.name }}</h1>
+      <h1 id="team-id" data-ctfd-team-id="{{ team.id }}">{{ team.name }}</h1>
       {% if team.oauth_id %}
         <a href="https://majorleaguecyber.org/t/{{ team.name }}">
           <h3><span class="badge bg-primary">{% trans %}Official{% endtrans %}</span></h3>
@@ -269,43 +269,28 @@
         {% endif %}
       </h2>
 
+      {% if team.captain_id == user.id %}
       <div x-data="CaptainMenu">
-        <a class="edit-team text-white" @click="editTeam()">
-          <i
-              class="cursor-pointer fas fa-cogs fa-2x px-2 pt-3"
-              data-bs-toggle="tooltip" data-bs-placement="top"
-              title="Edit Team"
-          ></i>
-        </a>
-        <a class="edit-captain text-white" @click="chooseCaptain()">
-          <i
-              class="cursor-pointer fas fa-user-tag fa-2x px-2 pt-3"
-              data-bs-toggle="tooltip" data-bs-placement="top"
-              title="Choose Captain"
-          ></i>
-        </a>
-
-        <a class="invite-members text-white" @click="inviteMembers()">
-          <i
-              class="cursor-pointer fas fa-ticket-alt fa-2x px-2 pt-3"
-              data-bs-toggle="tooltip" data-bs-placement="top"
-              title="Invite Users"
-          ></i>
-        </a>
-        <a class="disband-team text-white" @click="disbandTeam()">
-          <i
-              class="cursor-pointer fas fa-trash-alt fa-2x px-2 pt-3"
-              data-bs-toggle="tooltip" data-bs-placement="top"
-              title="Disband Team"
-          ></i>
-        </a>
+        <button type="button" class="btn btn-link edit-team text-white p-0" @click="editTeam()" aria-label="{% trans %}Edit Team{% endtrans %}" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="{% trans %}Edit Team{% endtrans %}">
+          <i class="fas fa-cogs fa-2x px-2 pt-3" aria-hidden="true"></i>
+        </button>
+        <button type="button" class="btn btn-link edit-captain text-white p-0" @click="chooseCaptain()" aria-label="{% trans %}Choose Captain{% endtrans %}" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="{% trans %}Choose Captain{% endtrans %}">
+          <i class="fas fa-user-tag fa-2x px-2 pt-3" aria-hidden="true"></i>
+        </button>
+        <button type="button" class="btn btn-link invite-members text-white p-0" @click="inviteMembers()" aria-label="{% trans %}Invite Users{% endtrans %}" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="{% trans %}Invite Users{% endtrans %}">
+          <i class="fas fa-ticket-alt fa-2x px-2 pt-3" aria-hidden="true"></i>
+        </button>
+        <button type="button" class="btn btn-link disband-team text-white p-0" @click="disbandTeam()" aria-label="{% trans %}Disband Team{% endtrans %}" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="{% trans %}Disband Team{% endtrans %}">
+          <i class="fas fa-trash-alt fa-2x px-2 pt-3" aria-hidden="true"></i>
+        </button>
       </div>
+      {% endif %}
 
       <div class="pt-3">{% if team.website and (team.website.startswith('http://') or team.website.startswith('https://')) %}
-          <a href="{{ team.website }}" target="_blank" style="color: inherit;" rel="noopener">
-            <i
+          <a href="{{ team.website }}" target="_blank" style="color: inherit;" rel="noopener" aria-label="{% trans %}Website{% endtrans %}">
+            <i aria-hidden="true"
                 class="fas fa-external-link-alt fa-2x px-2 pt-2"
-                data-toggle="tooltip" data-placement="top"
+                data-bs-toggle="tooltip" data-bs-placement="top"
                 title="{{ team.website }}"
             ></i>
           </a>
@@ -326,8 +311,8 @@
         <table class="table table-striped align-middle">
           <thead>
           <tr>
-            <th>{% trans %}User Name{% endtrans %}</th>
-            <th>{% trans %}Score{% endtrans %}</th>
+            <th scope="col">{% trans %}User Name{% endtrans %}</th>
+            <th scope="col">{% trans %}Score{% endtrans %}</th>
           </tr>
           </thead>
           <tbody>
@@ -385,10 +370,10 @@
           <table class="table table-striped align-middle">
             <thead>
             <tr>
-              <th>{% trans %}Challenge{% endtrans %}</th>
-              <th class="d-none d-md-block d-lg-block">{% trans %}Category{% endtrans %}</th>
-              <th>{% trans %}Value{% endtrans %}</th>
-              <th>{% trans %}Time{% endtrans %}</th>
+              <th scope="col">{% trans %}Challenge{% endtrans %}</th>
+              <th scope="col" class="d-none d-md-block d-lg-block">{% trans %}Category{% endtrans %}</th>
+              <th scope="col">{% trans %}Value{% endtrans %}</th>
+              <th scope="col">{% trans %}Time{% endtrans %}</th>
             </tr>
             </thead>
             <tbody>

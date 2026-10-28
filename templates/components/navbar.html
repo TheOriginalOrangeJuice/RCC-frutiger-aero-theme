@@ -18,7 +18,7 @@
   <div class="aero-sidebar collapse" id="aero-navigation">
   <div class="aero-menu-caption">
     <span>{% trans %}Bubble dock{% endtrans %}</span>
-    <small>{% trans %}Hover to set it free{% endtrans %}</small>
+    <small aria-hidden="true">{% trans %}Hover to set it free{% endtrans %}</small>
   </div>
   <nav class="aero-primary-nav" aria-label="{% trans %}Primary navigation{% endtrans %}">
     <a class="aero-nav-link aero-bubble-link aero-scene-home {{ 'active' if request.endpoint == 'views.static_html' }}" href="{{ url_for('views.static_html', route='/') }}">
@@ -62,23 +62,16 @@
     {% endif %}
   </nav>
 
-  <div class="aero-portal-status" aria-label="{% trans %}Site status: online{% endtrans %}">
+  <div class="aero-portal-status">
     <span class="aero-portal-orb" aria-hidden="true"><i class="fas fa-sun"></i></span>
     <span><strong>{% trans %}Clear skies{% endtrans %}</strong><small>{% trans %}Site online{% endtrans %}</small></span>
     <i class="fas fa-signal" aria-hidden="true"></i>
   </div>
 
   <div class="aero-sidebar-tools">
-    <button
-        class="aero-nav-link aero-sound-toggle" type="button" data-aero-sound-toggle aria-pressed="false"
-        data-label-on="{% trans %}Sound effects on{% endtrans %}"
-        data-label-off="{% trans %}Sound effects off{% endtrans %}"
-        data-title-on="{% trans %}Disable sound effects{% endtrans %}"
-        data-title-off="{% trans %}Enable sound effects{% endtrans %}"
-        title="{% trans %}Enable sound effects{% endtrans %}"
-    >
+    <button class="aero-nav-link aero-sound-toggle" type="button" data-aero-sound-toggle aria-pressed="false">
       <span><i class="fas fa-volume-xmark" aria-hidden="true"></i></span>
-      <span data-aero-sound-label>{% trans %}Sound effects off{% endtrans %}</span>
+      <span>{% trans %}Sound{% endtrans %} <span aria-hidden="true" data-aero-sound-state data-on="{% trans %}on{% endtrans %}" data-off="{% trans %}off{% endtrans %}">{% trans %}off{% endtrans %}</span></span>
     </button>
 
     <div class="dropup">
@@ -99,19 +92,19 @@
   <div class="aero-account-dock">
     {% if authed() %}
       <div class="dropup w-100">
-        <button class="aero-account-button" type="button" data-bs-toggle="dropdown" aria-expanded="false">
-          <span class="aero-avatar">{{ User.name[:1] | upper }}</span>
+        <button class="aero-account-button" type="button" data-bs-toggle="dropdown" aria-expanded="false" title="{{ User.name }}{% if Configs.user_mode == 'teams' and Team.name %} · {{ Team.name }}{% endif %}">
+          <span class="aero-avatar" aria-hidden="true">{{ User.name[:1] | upper }}</span>
           <span><strong>{{ User.name }}</strong><small>{% if Configs.user_mode == 'teams' and Team.name %}{{ Team.name }}{% else %}{% trans %}Participant{% endtrans %}{% endif %}</small></span>
           <i class="fas fa-chevron-down" aria-hidden="true"></i>
         </button>
         <ul class="dropdown-menu aero-dropdown">
-          {% if is_admin() %}<li><a class="dropdown-item" href="{{ url_for('admin.view') }}"><i class="fas fa-wrench"></i>{% trans %}Admin Panel{% endtrans %}</a></li>{% endif %}
-          <li><a class="dropdown-item" href="{{ url_for('views.notifications') }}"><i class="fas fa-bell"></i>{% trans %}Notifications{% endtrans %}<span x-data x-show="$store.unread_count > 0" x-text="$store.unread_count" class="badge rounded-pill bg-danger ms-2"></span></a></li>
-          {% if Configs.user_mode == 'teams' %}<li><a class="dropdown-item" href="{{ url_for('teams.private') }}"><i class="fas fa-users"></i>{% trans %}My Team{% endtrans %}</a></li>{% endif %}
-          <li><a class="dropdown-item" href="{{ url_for('users.private') }}"><i class="fas fa-user-circle"></i>{% trans %}Profile{% endtrans %}</a></li>
-          <li><a class="dropdown-item" href="{{ url_for('views.settings') }}"><i class="fas fa-cogs"></i>{% trans %}Settings{% endtrans %}</a></li>
+          {% if is_admin() %}<li><a class="dropdown-item" href="{{ url_for('admin.view') }}"><i class="fas fa-wrench" aria-hidden="true"></i>{% trans %}Admin Panel{% endtrans %}</a></li>{% endif %}
+          <li><a class="dropdown-item" href="{{ url_for('views.notifications') }}"><i class="fas fa-bell" aria-hidden="true"></i>{% trans %}Notifications{% endtrans %}<span x-data x-show="$store.unread_count > 0" x-text="$store.unread_count" class="badge rounded-pill bg-danger ms-2"></span></a></li>
+          {% if Configs.user_mode == 'teams' %}<li><a class="dropdown-item" href="{{ url_for('teams.private') }}"><i class="fas fa-users" aria-hidden="true"></i>{% trans %}My Team{% endtrans %}</a></li>{% endif %}
+          <li><a class="dropdown-item" href="{{ url_for('users.private') }}"><i class="fas fa-user-circle" aria-hidden="true"></i>{% trans %}Profile{% endtrans %}</a></li>
+          <li><a class="dropdown-item" href="{{ url_for('views.settings') }}"><i class="fas fa-cogs" aria-hidden="true"></i>{% trans %}Settings{% endtrans %}</a></li>
           <li><hr class="dropdown-divider"></li>
-          <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}"><i class="fas fa-sign-out-alt"></i>{% trans %}Logout{% endtrans %}</a></li>
+          <li><a class="dropdown-item" href="{{ url_for('auth.logout') }}"><i class="fas fa-sign-out-alt" aria-hidden="true"></i>{% trans %}Logout{% endtrans %}</a></li>
         </ul>
       </div>
     {% else %}
