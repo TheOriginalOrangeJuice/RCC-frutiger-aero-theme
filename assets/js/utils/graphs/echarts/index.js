@@ -32,17 +32,39 @@ echarts.use([
   CanvasRenderer,
 ]);
 
+const resizeHandlers = new WeakMap();
+const resizeObservers = new WeakMap();
+
 export function embed(target, option) {
-  let chart = echarts.init(target);
+  const chart = echarts.getInstanceByDom(target) || echarts.init(target);
 
   // https://echarts.apache.org/en/api.html#echartsInstance.setOption
   // https://github.com/apache/echarts/issues/6202#issuecomment-315054637
   // https://stackoverflow.com/a/72211534
   chart.setOption(option, true);
 
-  window.addEventListener("resize", () => {
-    if (chart) {
-      chart.resize();
+  chart.resize();
+  if (!resizeHandlers.has(target)) {
+    const resize = () => echarts.getInstanceByDom(target)?.resize();
+    resizeHandlers.set(target, resize);
+    window.addEventListener("resize", resize);
+    if (typeof ResizeObserver !== "undefined") {
+      const observer = new ResizeObserver(() => {
+        if (target.clientWidth && target.clientHeight) resize();
+      });
+      observer.observe(target);
+      resizeObservers.set(target, observer);
     }
-  });
+  }
+  return chart;
+}
+
+export function dispose(target) {
+  if (!target) return;
+  const resize = resizeHandlers.get(target);
+  if (resize) window.removeEventListener("resize", resize);
+  resizeHandlers.delete(target);
+  resizeObservers.get(target)?.disconnect();
+  resizeObservers.delete(target);
+  echarts.getInstanceByDom(target)?.dispose();
 }

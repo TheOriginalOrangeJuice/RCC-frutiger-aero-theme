@@ -37,10 +37,9 @@
 
         <div class="aero-hero-globe" aria-hidden="true">
           <div class="aero-hero-globe-inner">
+            <i class="fas fa-globe-americas aero-logo-fallback"></i>
             {% if Configs.ctf_logo %}
-              <img class="ctf_logo" src="{{ url_for('views.files', path=Configs.ctf_logo) }}" alt="">
-            {% else %}
-              <i class="fas fa-globe-americas"></i>
+              <img class="ctf_logo" data-aero-logo src="{{ url_for('views.files', path=Configs.ctf_logo) }}" alt="">
             {% endif %}
           </div>
           <span class="aero-orbit aero-orbit-one"></span>

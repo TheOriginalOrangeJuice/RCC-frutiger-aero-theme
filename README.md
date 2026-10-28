@@ -3,6 +3,10 @@
 A participant-facing Frutiger Aero theme for CTFd 3.8.6. The administrator
 interface is not changed.
 
+Sound is on by default. The Sound button saves your mute preference; browsers
+may require a click or keypress before hover sounds can play. Reduced-motion
+preferences disable the ambient movement.
+
 ## Installation
 
 From the root of your CTFd checkout, run:

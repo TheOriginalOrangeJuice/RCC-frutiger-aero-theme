@@ -1,4 +1,5 @@
 import CTFd from "@ctfdio/ctfd-js";
+import { initializeArtwork } from "./utils/artwork";
 
 const SOUND_STORAGE_KEY = "ctfd-frutiger-aero-sound";
 const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
@@ -33,7 +34,8 @@ function writeSoundSetting(value) {
 let soundSetting = readSoundSetting();
 
 function soundEnabled() {
-  return soundSetting === "true";
+  // Sound is on for new visitors; always respect an explicitly saved mute.
+  return soundSetting !== "false";
 }
 
 // The admin-chosen notification chime plays by default, but a participant who
@@ -48,7 +50,7 @@ let audioContext = null;
 // context start after it has been resumed inside a user gesture.
 function getAudioContext() {
   const AudioContext = window.AudioContext || window.webkitAudioContext;
-  if (!AudioContext) {
+  if (!AudioContext || navigator.userActivation?.hasBeenActive === false) {
     return null;
   }
 
@@ -108,7 +110,8 @@ function playBubblePop() {
   }
 
   const context = getAudioContext();
-  if (!context) {
+  // Don't queue hover sounds to play later when the browser unlocks audio.
+  if (!context || context.state !== "running") {
     return;
   }
   const oscillator = context.createOscillator();
@@ -147,7 +150,9 @@ function celebrateSolve() {
 }
 
 window.addEventListener("DOMContentLoaded", () => {
+  initializeArtwork();
   const root = document.documentElement;
+  const cursorGlow = document.querySelector(".aero-cursor-glow");
   const finePointer = window.matchMedia("(pointer: fine)");
   let pointerFrame = 0;
 
@@ -168,11 +173,26 @@ window.addEventListener("DOMContentLoaded", () => {
       const vertical = pointerY / window.innerHeight - 0.5;
       root.style.setProperty("--aero-parallax-x", `${horizontal * 12}px`);
       root.style.setProperty("--aero-parallax-y", `${vertical * 8}px`);
+      cursorGlow?.style.setProperty("--aero-pointer-x", `${pointerX}px`);
+      cursorGlow?.style.setProperty("--aero-pointer-y", `${pointerY}px`);
       pointerFrame = 0;
     });
   };
 
   window.addEventListener("pointermove", updateAmbientParallax, { passive: true });
+
+  // A normal first interaction unlocks hover audio without making a click sound.
+  // Keep listening so a context suspended by the browser can also be resumed.
+  const unlockAudio = () => {
+    if (soundEnabled()) {
+      getAudioContext();
+    }
+  };
+  document.addEventListener("pointerdown", unlockAudio, {
+    capture: true,
+    passive: true,
+  });
+  document.addEventListener("keydown", unlockAudio, { capture: true });
 
   const clock = document.querySelector("[data-aero-clock]");
   if (clock) {
@@ -208,7 +228,6 @@ window.addEventListener("DOMContentLoaded", () => {
     });
   });
 
-  const coarsePointer = window.matchMedia("(pointer: coarse)");
   document.querySelectorAll(".aero-bubble-link").forEach(link => {
     let lastPointerType = "";
 

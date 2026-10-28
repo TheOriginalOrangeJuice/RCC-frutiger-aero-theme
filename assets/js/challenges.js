@@ -1,6 +1,7 @@
 import Alpine from "alpinejs";
 
 import CTFd from "./index";
+import { getCategoryIcon } from "./utils/category-icons";
 
 import { Modal, Tab, Tooltip } from "bootstrap";
 import highlight from "./theme/highlight";
@@ -267,6 +268,7 @@ Alpine.data("Challenge", () => ({
 }));
 
 Alpine.data("ChallengeBoard", () => ({
+  getCategoryIcon,
   loaded: false,
   loadError: "",
   loadingChallenge: null,

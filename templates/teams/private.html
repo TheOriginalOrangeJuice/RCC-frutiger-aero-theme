@@ -269,7 +269,6 @@
         {% endif %}
       </h2>
 
-      {% if team.captain_id == user.id %}
       <div x-data="CaptainMenu">
         <button type="button" class="btn btn-link edit-team text-white p-0" @click="editTeam()" aria-label="{% trans %}Edit Team{% endtrans %}" data-bs-toggle="tooltip" data-bs-placement="top" data-bs-title="{% trans %}Edit Team{% endtrans %}">
           <i class="fas fa-cogs fa-2x px-2 pt-3" aria-hidden="true"></i>
@@ -284,7 +283,6 @@
           <i class="fas fa-trash-alt fa-2x px-2 pt-3" aria-hidden="true"></i>
         </button>
       </div>
-      {% endif %}
 
       <div class="pt-3">{% if team.website and (team.website.startswith('http://') or team.website.startswith('https://')) %}
           <a href="{{ team.website }}" target="_blank" style="color: inherit;" rel="noopener" aria-label="{% trans %}Website{% endtrans %}">

@@ -54,7 +54,7 @@
         </button>
         <template x-for="category in getAeroCategories()" :key="category">
           <button class="aero-channel-link" :class="{ active: categoryFilter === category }" :aria-pressed="categoryFilter === category" type="button" @click="categoryFilter = category">
-            <span><i class="fas fa-leaf" aria-hidden="true"></i></span>
+            <span><i :class="getCategoryIcon(category)" aria-hidden="true"></i></span>
             <b x-text="category"></b>
             <small x-text="getChallenges(category).length"></small>
           </button>
@@ -104,7 +104,7 @@
         <template x-for="category in getAeroVisibleCategories()" :key="category">
           <section class="aero-category-section">
             <div class="aero-category-heading">
-              <div><span class="aero-category-icon"><i class="fas fa-leaf" aria-hidden="true"></i></span><h2 x-text="category"></h2></div>
+              <div><span class="aero-category-icon"><i :class="getCategoryIcon(category)" aria-hidden="true"></i></span><h2 x-text="category"></h2></div>
               <span x-text="`${getAeroChallenges(category).length} ${getAeroChallenges(category).length === 1 ? $el.dataset.one : $el.dataset.many}`" data-one="{% trans %}challenge{% endtrans %}" data-many="{% trans %}challenges{% endtrans %}"></span>
             </div>
 
@@ -120,17 +120,17 @@
                     :value="c.id" @click="loadChallenge(c.id)"
                     :aria-busy="loadingChallenge === c.id"
                 >
-                  <span class="aero-card-icon" aria-hidden="true"><i :class="c.solved_by_me === true ? 'fas fa-check' : 'fas fa-flag'"></i></span>
+                  <span class="aero-card-icon" aria-hidden="true"><i :class="getCategoryIcon(c.category)"></i><span class="aero-card-solved" x-show="c.solved_by_me === true"><i class="fas fa-check"></i></span></span>
                   <span class="aero-card-copy">
                     <strong x-text="c.name" :title="c.name"></strong>
                     <span>
                       <small x-text="c.category"></small>
+                      <small class="aero-solved-label" x-show="c.solved_by_me === true">{% trans %}Solved{% endtrans %}</small>
                       <template x-for="tag in (c.tags || []).slice(0, 2)" :key="tag.value"><em x-text="tag.value"></em></template>
                     </span>
                   </span>
-                  <span class="aero-card-meter" aria-hidden="true"><i></i></span>
                   <span class="aero-card-value"><b x-text="c.value"></b><small>{% trans %}points{% endtrans %}</small></span>
-                  <span class="aero-card-state"><i :class="loadingChallenge === c.id ? 'fas fa-circle-notch fa-spin' : 'fas fa-chevron-right'"></i></span>
+                  <span class="aero-card-state" aria-hidden="true"><i :class="loadingChallenge === c.id ? 'fas fa-circle-notch fa-spin' : 'fas fa-chevron-right'"></i></span>
                 </button>
               </template>
             </div>

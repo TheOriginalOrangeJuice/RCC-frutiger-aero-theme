@@ -1,23 +1,26 @@
 {
-  "assets/img/aero-bubble-link.svg": {
-    "file": "assets/aero-bubble-link.fde6456b.svg",
-    "src": "assets/img/aero-bubble-link.svg"
-  },
   "assets/img/aero-nav-scenes-primary.webp": {
     "file": "assets/aero-nav-scenes-primary.1625daf9.webp",
     "src": "assets/img/aero-nav-scenes-primary.webp"
+  },
+  "assets/img/aero-bubble-link.svg": {
+    "file": "assets/aero-bubble-link.47718309.svg",
+    "src": "assets/img/aero-bubble-link.svg"
   },
   "assets/img/aero-lagoon-v3.png": {
     "file": "assets/aero-lagoon-v3.1e3cd462.png",
     "src": "assets/img/aero-lagoon-v3.png"
   },
   "assets/js/index.js": {
-    "file": "assets/index.ec9a4366.js",
+    "file": "assets/index.ae72b624.js",
     "src": "assets/js/index.js",
-    "isEntry": true
+    "isEntry": true,
+    "assets": [
+      "assets/aero-nav-scenes-primary.1625daf9.webp"
+    ]
   },
   "assets/js/page.js": {
-    "file": "assets/page.09423704.js",
+    "file": "assets/page.27feb059.js",
     "src": "assets/js/page.js",
     "isEntry": true,
     "imports": [
@@ -25,7 +28,7 @@
     ]
   },
   "assets/js/setup.js": {
-    "file": "assets/setup.b7e04e2b.js",
+    "file": "assets/setup.83517a23.js",
     "src": "assets/js/setup.js",
     "isEntry": true,
     "imports": [
@@ -33,16 +36,16 @@
     ]
   },
   "assets/js/settings.js": {
-    "file": "assets/settings.50b7b03d.js",
+    "file": "assets/settings.c9535fe3.js",
     "src": "assets/js/settings.js",
     "isEntry": true,
     "imports": [
       "assets/js/index.js",
-      "_clipboard.6c548aa5.js"
+      "_clipboard.fd68eda9.js"
     ]
   },
   "assets/js/challenges.js": {
-    "file": "assets/challenges.f58580ad.js",
+    "file": "assets/challenges.363283aa.js",
     "src": "assets/js/challenges.js",
     "isEntry": true,
     "imports": [
@@ -50,17 +53,17 @@
     ]
   },
   "assets/js/scoreboard.js": {
-    "file": "assets/scoreboard.93a6385a.js",
+    "file": "assets/scoreboard.7c895993.js",
     "src": "assets/js/scoreboard.js",
     "isEntry": true,
     "imports": [
       "assets/js/index.js",
-      "_index.1cf73b05.js",
-      "_echarts.128204f2.js"
+      "_index.d0f93e5e.js",
+      "_echarts.2c005163.js"
     ]
   },
   "assets/js/notifications.js": {
-    "file": "assets/notifications.4919c109.js",
+    "file": "assets/notifications.aea28bf5.js",
     "src": "assets/js/notifications.js",
     "isEntry": true,
     "imports": [
@@ -68,30 +71,30 @@
     ]
   },
   "assets/js/teams/public.js": {
-    "file": "assets/teams_public.a476c0db.js",
+    "file": "assets/teams_public.141cf380.js",
     "src": "assets/js/teams/public.js",
     "isEntry": true,
     "imports": [
       "assets/js/index.js",
-      "_userscore.bafce5ed.js",
-      "_index.1cf73b05.js",
-      "_echarts.128204f2.js"
+      "_userscore.3e4e6c73.js",
+      "_index.d0f93e5e.js",
+      "_echarts.2c005163.js"
     ]
   },
   "assets/js/teams/private.js": {
-    "file": "assets/teams_private.379a9c92.js",
+    "file": "assets/teams_private.029bacd0.js",
     "src": "assets/js/teams/private.js",
     "isEntry": true,
     "imports": [
       "assets/js/index.js",
-      "_clipboard.6c548aa5.js",
-      "_userscore.bafce5ed.js",
-      "_index.1cf73b05.js",
-      "_echarts.128204f2.js"
+      "_clipboard.fd68eda9.js",
+      "_userscore.3e4e6c73.js",
+      "_index.d0f93e5e.js",
+      "_echarts.2c005163.js"
     ]
   },
   "assets/js/teams/list.js": {
-    "file": "assets/teams_list.74f51266.js",
+    "file": "assets/teams_list.6938a219.js",
     "src": "assets/js/teams/list.js",
     "isEntry": true,
     "imports": [
@@ -99,59 +102,59 @@
     ]
   },
   "assets/js/users/public.js": {
-    "file": "assets/users_public.e4f6359e.js",
+    "file": "assets/users_public.5c2d0768.js",
     "src": "assets/js/users/public.js",
     "isEntry": true,
     "imports": [
       "assets/js/index.js",
-      "_userscore.bafce5ed.js",
-      "_index.1cf73b05.js",
-      "_echarts.128204f2.js"
+      "_userscore.3e4e6c73.js",
+      "_index.d0f93e5e.js",
+      "_echarts.2c005163.js"
     ]
   },
   "assets/js/users/private.js": {
-    "file": "assets/users_private.1198a94e.js",
+    "file": "assets/users_private.b07cc01b.js",
     "src": "assets/js/users/private.js",
     "isEntry": true,
     "imports": [
       "assets/js/index.js",
-      "_userscore.bafce5ed.js",
-      "_index.1cf73b05.js",
-      "_echarts.128204f2.js"
+      "_userscore.3e4e6c73.js",
+      "_index.d0f93e5e.js",
+      "_echarts.2c005163.js"
     ]
   },
   "assets/js/users/list.js": {
-    "file": "assets/users_list.7d7f43b5.js",
+    "file": "assets/users_list.aec5ed0a.js",
     "src": "assets/js/users/list.js",
     "isEntry": true,
     "imports": [
       "assets/js/index.js"
     ]
   },
-  "_echarts.128204f2.js": {
-    "file": "assets/echarts.128204f2.js"
+  "_echarts.2c005163.js": {
+    "file": "assets/echarts.2c005163.js"
   },
-  "_clipboard.6c548aa5.js": {
-    "file": "assets/clipboard.6c548aa5.js",
+  "_clipboard.fd68eda9.js": {
+    "file": "assets/clipboard.fd68eda9.js",
     "imports": [
       "assets/js/index.js"
     ]
   },
-  "_index.1cf73b05.js": {
-    "file": "assets/index.1cf73b05.js",
+  "_index.d0f93e5e.js": {
+    "file": "assets/index.d0f93e5e.js",
     "imports": [
-      "_echarts.128204f2.js"
+      "_echarts.2c005163.js"
     ]
   },
-  "_userscore.bafce5ed.js": {
-    "file": "assets/userscore.bafce5ed.js",
+  "_userscore.3e4e6c73.js": {
+    "file": "assets/userscore.3e4e6c73.js",
     "imports": [
       "assets/js/index.js",
-      "_index.1cf73b05.js"
+      "_index.d0f93e5e.js"
     ]
   },
   "assets/scss/main.scss": {
-    "file": "assets/main.022b57a7.css",
+    "file": "assets/main.f2858838.css",
     "src": "assets/scss/main.scss",
     "isEntry": true
   }

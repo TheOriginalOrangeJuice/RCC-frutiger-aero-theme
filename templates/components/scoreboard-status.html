@@ -1,0 +1,10 @@
+<div class="aero-score-status" :class="{ 'is-initial': !{{ has_saved }}, 'is-warning': failed || delayed, 'd-none': !loading && !failed }" x-cloak role="status" aria-live="polite" aria-atomic="true">
+  <i :class="failed || delayed ? 'fas fa-cloud-sun' : 'fas fa-circle-notch fa-spin'" aria-hidden="true"></i>
+  <template x-if="loading && !delayed && !{{ has_saved }}"><span>{% trans %}Loading scores…{% endtrans %}</span></template>
+  <template x-if="loading && !delayed && {{ has_saved }}"><span>{% trans %}Refreshing scores…{% endtrans %}</span></template>
+  <template x-if="delayed && !{{ has_saved }}"><span>{% trans %}This is taking longer than usual. You can wait or retry.{% endtrans %}</span></template>
+  <template x-if="delayed && {{ has_saved }}"><span>{% trans %}Update delayed. Showing previous data (stale).{% endtrans %}</span></template>
+  <template x-if="failed && !{{ has_saved }}"><span>{% trans %}Scores could not be loaded. Please try again.{% endtrans %}</span></template>
+  <template x-if="failed && {{ has_saved }}"><span>{% trans %}Refresh failed. Showing previous data (stale).{% endtrans %}</span></template>
+  <button class="btn aero-button-secondary" :class="{'d-none': !failed && !delayed}" type="button" @click="update()">{% trans %}Retry{% endtrans %}</button>
+</div>
