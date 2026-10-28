@@ -28,16 +28,16 @@
 
         <template x-if="brackets.length && standings.length">
           <nav class="aero-bracket-tabs" aria-label="{% trans %}Score brackets{% endtrans %}">
-            <button :class="{ active: !activeBracket }" @click="activeBracket=null">{% trans %}All{% endtrans %}</button>
+            <button type="button" :class="{ active: !activeBracket }" :aria-pressed="!activeBracket" @click="activeBracket=null">{% trans %}All{% endtrans %}</button>
             <template x-for="bracket in brackets" :key="bracket.id">
-              <button :class="{ active: activeBracket == bracket.id }" x-text="bracket.name" @click="activeBracket=bracket.id"></button>
+              <button type="button" :class="{ active: activeBracket == bracket.id }" :aria-pressed="activeBracket == bracket.id" x-text="bracket.name" @click="activeBracket=bracket.id"></button>
             </template>
           </nav>
         </template>
 
         <div class="aero-ranking-table" x-show="standings.length">
           <table class="table align-middle">
-            <thead><tr><th>{% trans %}Rank{% endtrans %}</th><th>{{ get_mode_as_word(capitalize=True) }}</th><th>{% trans %}Score{% endtrans %}</th></tr></thead>
+            <thead><tr><th scope="col">{% trans %}Rank{% endtrans %}</th><th scope="col">{{ get_mode_as_word(capitalize=True) }}</th><th scope="col">{% trans %}Score{% endtrans %}</th></tr></thead>
             <tbody>
               <template x-for="(standing, index) in standings.filter(i => activeBracket ? i.bracket_id==activeBracket : true)" :key="standing.account_id || standing.name">
                 <tr :class="{ 'is-podium': index < 3 }">

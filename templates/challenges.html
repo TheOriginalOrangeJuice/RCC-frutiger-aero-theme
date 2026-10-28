@@ -11,7 +11,7 @@
   >
     <div
         x-ref="challengeWindow" id="challenge-window" class="modal" tabindex="-1"
-        role="dialog" aria-modal="true" x-html="$store.challenge.data.view"
+        role="dialog" aria-modal="true" aria-labelledby="challenge-title" x-html="$store.challenge.data.view"
         @click="dismissChallenge($event)"
     ></div>
 
@@ -47,13 +47,13 @@
           <span><i class="fas fa-compass" aria-hidden="true"></i></span>
           <div><strong>{% trans %}Categories{% endtrans %}</strong><small>{% trans %}Choose a topic{% endtrans %}</small></div>
         </div>
-        <button class="aero-channel-link" :class="{ active: categoryFilter === 'all' }" type="button" @click="categoryFilter = 'all'">
+        <button class="aero-channel-link" :class="{ active: categoryFilter === 'all' }" :aria-pressed="categoryFilter === 'all'" type="button" @click="categoryFilter = 'all'">
           <span><i class="fas fa-layer-group" aria-hidden="true"></i></span>
           <b>{% trans %}All challenges{% endtrans %}</b>
           <small x-text="challenges.length"></small>
         </button>
         <template x-for="category in getAeroCategories()" :key="category">
-          <button class="aero-channel-link" :class="{ active: categoryFilter === category }" type="button" @click="categoryFilter = category">
+          <button class="aero-channel-link" :class="{ active: categoryFilter === category }" :aria-pressed="categoryFilter === category" type="button" @click="categoryFilter = category">
             <span><i class="fas fa-leaf" aria-hidden="true"></i></span>
             <b x-text="category"></b>
             <small x-text="getChallenges(category).length"></small>
@@ -105,7 +105,7 @@
           <section class="aero-category-section">
             <div class="aero-category-heading">
               <div><span class="aero-category-icon"><i class="fas fa-leaf" aria-hidden="true"></i></span><h2 x-text="category"></h2></div>
-              <span x-text="`${getAeroChallenges(category).length} challenge${getAeroChallenges(category).length === 1 ? '' : 's'}`"></span>
+              <span x-text="`${getAeroChallenges(category).length} ${getAeroChallenges(category).length === 1 ? $el.dataset.one : $el.dataset.many}`" data-one="{% trans %}challenge{% endtrans %}" data-many="{% trans %}challenges{% endtrans %}"></span>
             </div>
 
             <div class="aero-mission-list">
@@ -118,11 +118,11 @@
                     }"
                     :data-solved="c.solved_by_me === true ? 'true' : 'false'"
                     :value="c.id" @click="loadChallenge(c.id)"
-                    :disabled="loadingChallenge !== null"
+                    :aria-busy="loadingChallenge === c.id"
                 >
                   <span class="aero-card-icon" aria-hidden="true"><i :class="c.solved_by_me === true ? 'fas fa-check' : 'fas fa-flag'"></i></span>
                   <span class="aero-card-copy">
-                    <strong x-text="c.name"></strong>
+                    <strong x-text="c.name" :title="c.name"></strong>
                     <span>
                       <small x-text="c.category"></small>
                       <template x-for="tag in (c.tags || []).slice(0, 2)" :key="tag.value"><em x-text="tag.value"></em></template>

@@ -100,7 +100,7 @@
 
                   <template x-for="(msg, idx) in errors" :key="idx">
                     <div class="alert alert-danger alert-dismissible" role="alert">
-                      <span class="sr-only">{% trans %}Error:{% endtrans %}</span>
+                      <span class="visually-hidden">{% trans %}Error:{% endtrans %}</span>
                       <span x-text="msg"></span>
                       <button
                           type="button" class="btn-close" data-bs-dismiss="alert"
@@ -143,9 +143,9 @@
                           >
                           <button
                               class="btn btn-outline-secondary px-3" type="button"
-                              @click="copyToken()"
+                              @click="copyToken()" aria-label="{% trans %}Copy to clipboard{% endtrans %}"
                           >
-                            <i class="fas fa-clipboard"></i>
+                            <i class="fas fa-clipboard" aria-hidden="true"></i>
                           </button>
                         </div>
                       </div>
@@ -221,10 +221,10 @@
                 <table class="table table-striped align-middle">
                   <thead>
                   <tr>
-                    <th class="text-center">{% trans %}Created{% endtrans %}</th>
-                    <th>{% trans %}Expiration{% endtrans %}</th>
-                    <th>{% trans %}Description{% endtrans %}</th>
-                    <th>{% trans %}Delete{% endtrans %}</th>
+                    <th scope="col" class="text-center">{% trans %}Created{% endtrans %}</th>
+                    <th scope="col">{% trans %}Expiration{% endtrans %}</th>
+                    <th scope="col">{% trans %}Description{% endtrans %}</th>
+                    <th scope="col">{% trans %}Delete{% endtrans %}</th>
                   </tr>
                   </thead>
                   <tbody>
@@ -240,11 +240,12 @@
                         <span>{{ token.description | default('', true) }}</span>
                       </td>
                       <td class="text-center">
-                        <span
-                            class="delete-token" role="button"
+                        <button
+                            type="button" class="btn btn-link delete-token p-0"
+                            aria-label="{% trans %}Delete token{% endtrans %}"
                             @click="deleteTokenModal({{ token.id }})">
-                            <i class="cursor-pointer fas fa-times"></i>
-                        </span>
+                            <i class="fas fa-times" aria-hidden="true"></i>
+                        </button>
                       </td>
                     </tr>
                   {% endfor %}

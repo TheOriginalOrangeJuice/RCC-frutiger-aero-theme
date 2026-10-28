@@ -26,6 +26,11 @@ Alpine.data("UserGraphs", () => ({
     const categories = [];
     const breakdown = {};
 
+    // Alpine renders before init() has fetched the solves.
+    if (!this.solves) {
+      return [];
+    }
+
     this.solves.data.map(solve => {
       categories.push(solve.challenge.category);
     });

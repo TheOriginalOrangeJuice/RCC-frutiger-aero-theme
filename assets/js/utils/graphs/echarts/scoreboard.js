@@ -38,6 +38,8 @@ export function getOption(mode, places, optionMerge) {
         type: "time",
         boundaryGap: false,
         data: [],
+        // Narrow screens otherwise print overlapping timestamps.
+        axisLabel: { hideOverlap: true },
       },
     ],
     yAxis: [

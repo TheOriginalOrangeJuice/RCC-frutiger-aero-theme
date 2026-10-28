@@ -3,11 +3,11 @@
     <div class="modal-body py-4 px-4 px-sm-5">
 
       <div>
-        <button type="button" class="btn-close float-end" data-bs-dismiss="modal" aria-label="Close"></button>
+        <button type="button" class="btn-close float-end" data-bs-dismiss="modal" aria-label="{% trans %}Close{% endtrans %}"></button>
 
-        <ul class="nav nav-tabs">
+        <ul class="nav nav-tabs" role="tablist">
           <li class="nav-item">
-            <button class="nav-link active" data-bs-target="#challenge" @click="showChallenge()">
+            <button class="nav-link active" type="button" role="tab" aria-controls="challenge" aria-selected="true" data-bs-target="#challenge" @click="showChallenge()">
               {% trans %}Challenge{% endtrans %}
             </button>
           </li>
@@ -15,10 +15,8 @@
           {% block submissions %}
             {% if Configs.view_self_submissions %}
             <li class="nav-item">
-              <button class="nav-link challenge-submissions" data-bs-target="#submissions" @click="showSubmissions()">
-                {% if solves != None %}
-                  Submissions
-                {% endif %}
+              <button class="nav-link challenge-submissions" type="button" role="tab" aria-controls="submissions" aria-selected="false" data-bs-target="#submissions" @click="showSubmissions()">
+                {% trans %}Submissions{% endtrans %}
               </button>
             </li>
             {% endif %}
@@ -26,7 +24,7 @@
 
           {% block solution %}
             <li class="nav-item" x-show="getSolutionId()">
-              <button class="nav-link challenge-solution" data-bs-target="#solution" @click="showSolution()">
+              <button class="nav-link challenge-solution" type="button" role="tab" aria-controls="solution" aria-selected="false" data-bs-target="#solution" @click="showSolution()">
                 {% trans %}Solution{% endtrans %}
               </button>
             </li>
@@ -35,7 +33,7 @@
           {% block solves %}
             {% if solves != None %}
             <li class="nav-item">
-              <button class="nav-link challenge-solves" data-bs-target="#solves" @click="showSolves()">
+              <button class="nav-link challenge-solves" type="button" role="tab" aria-controls="solves" aria-selected="false" data-bs-target="#solves" @click="showSolves()">
                   {{ ngettext("%(num)d Solve", "%(num)d Solves", solves) }}
               </button>
             </li>
@@ -47,7 +45,7 @@
       <div>
         <div class="tab-content">
           <div role="tabpanel" class="tab-pane fade show active" id="challenge">
-            <h2 class="challenge-name text-center pt-3">
+            <h2 id="challenge-title" class="challenge-name text-center pt-3">
               {{ challenge.name }}
             </h2>
             <h3 class="challenge-value text-center">
@@ -73,19 +71,19 @@
             <small class="challenge-ratings text-center text-muted d-block">
               {% block ratings %}
                 {% if ratings %}
-                  <span><i class="fa-solid fa-thumbs-up"></i> {{ ratings.up }}</span>
+                  <span><i class="fa-solid fa-thumbs-up" aria-hidden="true"></i><span class="visually-hidden">{% trans %}Thumbs up{% endtrans %}</span> {{ ratings.up }}</span>
                   <span class="text-center px-2">
                     {% if ratings.count %}
-                    ({{ ((ratings.up / (ratings.count)) * 100) | int }}% liked)
+                    ({% trans percent=((ratings.up / (ratings.count)) * 100) | int %}{{ percent }}% liked{% endtrans %})
                     {% endif %}
                   </span>
-                  <span><i class="fa-solid fa-thumbs-down"></i> {{ ratings.down }}</span>
+                  <span><i class="fa-solid fa-thumbs-down" aria-hidden="true"></i><span class="visually-hidden">{% trans %}Thumbs down{% endtrans %}</span> {{ ratings.down }}</span>
                 {% endif %}
               {% endblock %}
             </small>
             {% endif %}
 
-            <span class="challenge-desc">{% block description %}{{ challenge.html }}{% endblock %}</span>
+            <div class="challenge-desc">{% block description %}{{ challenge.html }}{% endblock %}</div>
 
             {% if challenge.connection_info %}
               <div class="mb-2">
@@ -116,9 +114,9 @@
                     {% else %}
                     <details @toggle="showHint(event)">
                       {% if hint.title %}
-                      <summary>{{ hint.title }} (Cost: {{ hint.cost }} point{{ hint.cost|pluralize }})</summary>
+                      <summary>{{ hint.title }} ({% trans num=hint.cost %}Cost: {{ num }} point{% pluralize %}Cost: {{ num }} points{% endtrans %})</summary>
                       {% else %}
-                      <summary>Unlock Hint for {{ hint.cost }} point{{ hint.cost|pluralize }}</summary>
+                      <summary>{% trans num=hint.cost %}Unlock Hint for {{ num }} point{% pluralize %}Unlock Hint for {{ num }} points{% endtrans %}</summary>
                       {% endif %}
                       <div x-html="html"></div>
                     </details>
@@ -145,7 +143,7 @@
                         href="{{ file }}"
                         title="{{ filename }}"
                     >
-                      <i class="fas fa-download"></i>
+                      <i class="fas fa-download" aria-hidden="true"></i>
                       <small>
                         {{ filename }}
                       </small>
@@ -172,7 +170,8 @@
                       id="challenge-input" class="challenge-input form-control"
                       type="text" name="submission"
                       @keyup.enter="submitChallenge()"
-                      placeholder="{% trans %}Flag{% endtrans %}" x-model="submission"
+                      placeholder="{% trans %}Flag{% endtrans %}" aria-label="{% trans %}Flag{% endtrans %}"
+                      autocomplete="off" spellcheck="false" x-model="submission"
                   >
                 {% endblock %}
               </div>
@@ -192,6 +191,7 @@
 
             <div class="row notification-row" x-effect="window.aeroHandleSubmissionResponse(response)">
               <div class="col-12">
+                <p class="visually-hidden" role="status" aria-live="polite" x-text="response ? response.data.message : ''"></p>
                 <template x-if="response">
                   {# This alert is re-used for all alerts, so it's important not to make it dismissible #}
                   <div class="alert text-center w-100 mt-3"
@@ -200,33 +200,33 @@
                         'alert-info': response.data.status == 'already_solved' || response.data.status == 'partial',
                         'alert-danger': response.data.status == 'incorrect',
                         'alert-warning': response.data.status == 'paused' || response.data.status == 'ratelimited',
-                      }" role="status" aria-live="polite"
+                      }"
                   >
                     <strong x-text="response.data.message"></strong>
                     <div x-show="(response.data.status == 'correct' || response.data.status == 'already_solved')">
                       <div x-show="getNextId()">
-                        <button @click="nextChallenge()" class="btn btn-info mt-3">
+                        <button type="button" @click="nextChallenge()" class="btn btn-info mt-3">
                           {% trans %}Next Challenge{% endtrans %}
                         </button>
                       </div>
 
                       {% if Configs.social_shares %}
                       <div>
-                        <button x-show="!share_url" @click="getShareUrl()" class="btn btn-sm btn-outline-info mt-3">
+                        <button type="button" x-show="!share_url" @click="getShareUrl()" class="btn btn-sm btn-outline-info mt-3">
                           {% trans %}Share{% endtrans %}
                         </button>
                         <div class="btn-group mt-3" role="group" x-show="share_url">
-                          <button type="button" class="btn btn-sm btn-outline-secondary" @click="copyShareUrl()" data-bs-toggle="tooltip" data-bs-title="Copied!">
-                            <i class="fa-solid fa-copy"></i>
+                          <button type="button" class="btn btn-sm btn-outline-secondary" @click="copyShareUrl()" aria-label="{% trans %}Copy link{% endtrans %}" data-bs-toggle="tooltip" data-bs-title="{% trans %}Copied!{% endtrans %}">
+                            <i class="fa-solid fa-copy" aria-hidden="true"></i>
                           </button>
-                          <a :href="'https://twitter.com/intent/tweet?url=' + encodeURIComponent(share_url)" role="button" class="btn btn-sm btn-outline-secondary" target="_blank">
-                            <i class="fa-brands fa-twitter"></i>
+                          <a :href="'https://twitter.com/intent/tweet?url=' + encodeURIComponent(share_url)" class="btn btn-sm btn-outline-secondary" target="_blank" rel="noopener" aria-label="{% trans %}Share on Twitter{% endtrans %}">
+                            <i class="fa-brands fa-twitter" aria-hidden="true"></i>
                           </a>
-                          <a :href="'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(share_url)" role="button" class="btn btn-sm btn-outline-secondary" target="_blank">
-                            <i class="fa-brands fa-facebook-f"></i>
+                          <a :href="'https://www.facebook.com/sharer/sharer.php?u=' + encodeURIComponent(share_url)" class="btn btn-sm btn-outline-secondary" target="_blank" rel="noopener" aria-label="{% trans %}Share on Facebook{% endtrans %}">
+                            <i class="fa-brands fa-facebook-f" aria-hidden="true"></i>
                           </a>
-                          <a :href="'http://www.linkedin.com/shareArticle?url=' + encodeURIComponent(share_url)" role="button" class="btn btn-sm btn-outline-secondary" target="_blank">
-                            <i class="fa-brands fa-linkedin-in"></i>
+                          <a :href="'https://www.linkedin.com/shareArticle?url=' + encodeURIComponent(share_url)" class="btn btn-sm btn-outline-secondary" target="_blank" rel="noopener" aria-label="{% trans %}Share on LinkedIn{% endtrans %}">
+                            <i class="fa-brands fa-linkedin-in" aria-hidden="true"></i>
                           </a>
                         </div>
                       </div>
@@ -238,32 +238,40 @@
                         <div class="text-center">
                           <p class="mb-2">{% trans %}Rate this challenge:{% endtrans %}</p>
                           <div class="rating-buttons mb-2" x-init="selectedRating = ratingValue || 0;">
-                            <button 
-                              class="btn btn-outline-success me-2" 
+                            <button
+                              type="button"
+                              class="btn btn-outline-success me-2"
                               :class="{ 'active': selectedRating === 1 }"
+                              :aria-pressed="selectedRating === 1"
+                              aria-label="{% trans %}Thumbs up{% endtrans %}"
                               @click="selectedRating = 1"
                             >
-                              <i class="fa-solid fa-thumbs-up"></i>
+                              <i class="fa-solid fa-thumbs-up" aria-hidden="true"></i>
                             </button>
-                            <button 
-                              class="btn btn-outline-danger" 
+                            <button
+                              type="button"
+                              class="btn btn-outline-danger"
                               :class="{ 'active': selectedRating === -1 }"
+                              :aria-pressed="selectedRating === -1"
+                              aria-label="{% trans %}Thumbs down{% endtrans %}"
                               @click="selectedRating = -1"
                             >
-                              <i class="fa-solid fa-thumbs-down"></i>
+                              <i class="fa-solid fa-thumbs-down" aria-hidden="true"></i>
                             </button>
                           </div>
                           <div class="mt-3">
-                            <textarea 
-                              class="form-control" 
-                              rows="2" 
+                            <textarea
+                              class="form-control"
+                              aria-label="{% trans %}Review{% endtrans %}"
+                              rows="2"
                               x-model="ratingReview"
                               placeholder="{% trans %}Write a review (optional){% endtrans %}"
                               maxlength="2000"
                             ></textarea>
                           </div>
                           <div class="mt-3">
-                            <button 
+                            <button
+                              type="button"
                               @click="submitRating()"
                               class="btn btn-primary"
                               :disabled="!selectedRating"
@@ -290,9 +298,9 @@
                 <table class="table table-striped align-middle text-center">
                   <thead>
                   <tr>
-                    <th>{% trans %}Submission{% endtrans %}</th>
-                    <th>{% trans %}Type{% endtrans %}</th>
-                    <th>{% trans %}Date{% endtrans %}</th>
+                    <th scope="col">{% trans %}Submission{% endtrans %}</th>
+                    <th scope="col">{% trans %}Type{% endtrans %}</th>
+                    <th scope="col">{% trans %}Date{% endtrans %}</th>
                   </tr>
                   </thead>
                   <tbody id="challenge-submission-names">
@@ -300,8 +308,8 @@
                     <tr>
                       <td x-data="{ truncate: true }">
                         <code x-text="truncate ? '*'.repeat(submission.provided.length) : submission.provided"></code>
-                        <button class="btn btn-link p-0 pl-1" @click="truncate = !truncate">
-                          <i :class="truncate ? 'fas fa-eye' : 'fas fa-eye-slash'"></i>
+                        <button type="button" class="btn btn-link p-0 ps-1" @click="truncate = !truncate" :aria-pressed="!truncate" aria-label="{% trans %}Show submission{% endtrans %}">
+                          <i :class="truncate ? 'fas fa-eye' : 'fas fa-eye-slash'" aria-hidden="true"></i>
                         </button>
                       </td>
                       <td x-text="submission.type"></td>
@@ -320,8 +328,8 @@
                 <table class="table table-striped align-middle text-center">
                   <thead>
                   <tr>
-                    <th>{% trans %}Name{% endtrans %}</th>
-                    <th>{% trans %}Date{% endtrans %}</th>
+                    <th scope="col">{% trans %}Name{% endtrans %}</th>
+                    <th scope="col">{% trans %}Date{% endtrans %}</th>
                   </tr>
                   </thead>
                   <tbody id="challenge-solves-names">
