@@ -5487,6 +5487,45 @@ body.aero-body::after {
   font-weight: 700;
 }
 
+/* Limited-attempt feedback stays separate from the green solved treatment. */
+.aero-challenge-card.attempt-failed:not(.challenge-solved) {
+  border-color: #ac7c21;
+  background: linear-gradient(150deg, #fff9df, #f4df9c);
+}
+
+.aero-challenge-card.attempt-last:not(.challenge-solved) {
+  border-color: #b74e22;
+  background: linear-gradient(150deg, #fff0e3, #f5bc94);
+}
+
+.aero-challenge-card.attempt-exhausted:not(.challenge-solved) {
+  border-color: #a3485c;
+  background: linear-gradient(150deg, #ffedf0, #edb7c4);
+}
+
+.aero-attempt-label {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.12rem 0.4rem;
+  color: #663f08;
+  border: 1px solid currentColor;
+  border-radius: 6px;
+  background: #fff9e8;
+  font-size: 0.7rem;
+  font-weight: 700;
+}
+
+.attempt-last .aero-attempt-label {
+  color: #7d2c0a;
+  background: #fff3e9;
+}
+
+.attempt-exhausted .aero-attempt-label {
+  color: #7a2339;
+  background: #fff0f3;
+}
+
 .aero-category-heading h2 {
   overflow-wrap: anywhere;
 }

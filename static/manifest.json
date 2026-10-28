@@ -45,7 +45,7 @@
     ]
   },
   "assets/js/challenges.js": {
-    "file": "assets/challenges.363283aa.js",
+    "file": "assets/challenges.aa573538.js",
     "src": "assets/js/challenges.js",
     "isEntry": true,
     "imports": [
@@ -154,7 +154,7 @@
     ]
   },
   "assets/scss/main.scss": {
-    "file": "assets/main.f2858838.css",
+    "file": "assets/main.3e0cc4eb.css",
     "src": "assets/scss/main.scss",
     "isEntry": true
   }

@@ -1,5 +1,11 @@
 # Frutiger Aero Theme for CTFd
 
+![Homepage](docs/screenshots/home.png)
+
+![Challenges](docs/screenshots/challenges.png)
+
+![Scoreboard](docs/screenshots/scoreboard.png)
+
 ## Installation
 
 From the root of your CTFd checkout, run:

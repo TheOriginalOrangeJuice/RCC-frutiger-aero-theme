@@ -2,6 +2,7 @@ import Alpine from "alpinejs";
 
 import CTFd from "./index";
 import { getCategoryIcon } from "./utils/category-icons";
+import { createAttemptLoader } from "./utils/challenge-attempts";
 
 import { Modal, Tab, Tooltip } from "bootstrap";
 import highlight from "./theme/highlight";
@@ -249,7 +250,7 @@ Alpine.data("Challenge", () => ({
     }
 
     // Dispatch load-challenges event to call loadChallenges in the ChallengeBoard
-    this.$dispatch("load-challenges");
+    this.$dispatch("load-challenges", this.id);
   },
 
   async submitRating() {
@@ -277,8 +278,51 @@ Alpine.data("ChallengeBoard", () => ({
   search: "",
   categoryFilter: "all",
   statusFilter: "all",
+  attemptStates: {},
+  attemptLoader: null,
+  attemptObserver: null,
+  attemptRows: new Map(),
+  attemptFocusHandler: null,
 
   async init() {
+    if (CTFd.user.id && (CTFd.config.userMode !== "teams" || CTFd.team.id)) {
+      this.attemptLoader = createAttemptLoader(
+        async (id, signal) => {
+          const response = await CTFd.fetch(`/api/v1/challenges/${id}`, {
+            method: "GET",
+            signal,
+          });
+          if (!response.ok) throw new Error("Attempt status unavailable");
+          const body = await response.json();
+          if (!body.success || body.data?.id !== id)
+            throw new Error("Invalid challenge response");
+          return body.data;
+        },
+        (id, state) => {
+          this.attemptStates[id] = state;
+        },
+      );
+      if (typeof IntersectionObserver !== "undefined") {
+        this.attemptObserver = new IntersectionObserver(
+          entries => {
+            for (const entry of entries) {
+              if (!entry.target.isConnected) {
+                this.attemptObserver.unobserve(entry.target);
+                this.attemptRows.delete(entry.target);
+                continue;
+              }
+              const row = this.attemptRows.get(entry.target);
+              if (!row) continue;
+              row.visible = entry.isIntersecting;
+              if (row.visible) this.attemptLoader.request(row.id);
+            }
+          },
+          { rootMargin: "120px" },
+        );
+      }
+      this.attemptFocusHandler = () => this.refreshAttemptRows();
+      window.addEventListener("focus", this.attemptFocusHandler);
+    }
     await this.loadChallenges();
 
     if (!this.loadError && window.location.hash) {
@@ -290,6 +334,52 @@ Alpine.data("ChallengeBoard", () => ({
         await this.loadChallenge(id);
       }
     }
+  },
+
+  watchAttemptRow(element, challenge) {
+    if (
+      !this.attemptLoader ||
+      challenge.type === "hidden" ||
+      challenge.solved_by_me === true
+    )
+      return;
+    this.attemptRows.set(element, { id: challenge.id, visible: false });
+    if (this.attemptObserver) this.attemptObserver.observe(element);
+    else {
+      this.attemptRows.get(element).visible = true;
+      this.attemptLoader.request(challenge.id);
+    }
+  },
+
+  refreshAttemptRows(challengeId) {
+    const visible = new Set();
+    for (const [element, row] of this.attemptRows) {
+      if (!element.isConnected) {
+        this.attemptObserver?.unobserve(element);
+        this.attemptRows.delete(element);
+      } else if (row.visible) visible.add(row.id);
+    }
+    if (Number.isSafeInteger(challengeId)) {
+      visible.clear();
+      visible.add(challengeId);
+    }
+    for (const id of visible) {
+      const challenge = this.challenges.find(c => c.id === id);
+      if (challenge && challenge.type !== "hidden" && challenge.solved_by_me !== true) {
+        this.attemptLoader?.request(id, true);
+      }
+    }
+  },
+
+  getAttemptStatus(challenge) {
+    return this.attemptStates[challenge.id]?.status || "";
+  },
+
+  destroy() {
+    this.attemptLoader?.destroy();
+    this.attemptObserver?.disconnect();
+    this.attemptRows.clear();
+    window.removeEventListener("focus", this.attemptFocusHandler);
   },
 
   getCategories() {
@@ -419,11 +509,12 @@ Alpine.data("ChallengeBoard", () => ({
     }
   },
 
-  async loadChallenges() {
+  async loadChallenges(challengeId) {
     this.loadError = "";
     try {
       const challenges = await CTFd.pages.challenges.getChallenges();
       this.challenges = Array.isArray(challenges) ? challenges : [];
+      this.refreshAttemptRows(challengeId);
     } catch (error) {
       console.error("Unable to load challenges", error);
       this.loadError =
@@ -448,6 +539,7 @@ Alpine.data("ChallengeBoard", () => ({
         challengeDisplayed = true;
         challenge.data.view = addTargetBlank(challenge.data.view);
         Alpine.store("challenge").data = challenge.data;
+        this.attemptLoader?.remember(challenge.data);
 
         Alpine.nextTick(() => {
           const modal = Modal.getOrCreateInstance("[x-ref='challengeWindow']");
