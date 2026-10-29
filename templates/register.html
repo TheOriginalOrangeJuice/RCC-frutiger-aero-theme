@@ -15,6 +15,7 @@
         <h1>{% trans %}Create your account{% endtrans %}</h1>
         <p>{% trans %}Choose your public name and account credentials.{% endtrans %}</p>
         {% include "components/errors.html" %}
+        {% with policy_id = "register", compact = true %}{% include "components/ai_policy.html" %}{% endwith %}
 
         {% if integrations.mlc() %}
           <a class="btn aero-button-secondary w-100" href="{{ url_for('auth.oauth_login') }}">Login with Major League Cyber</a>

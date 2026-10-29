@@ -6,6 +6,46 @@ import { Modal, Tab, Tooltip } from "bootstrap";
 import highlight from "./theme/highlight";
 import { intl } from "./theme/times";
 
+// Same request as CTFd.pages.challenge.submitChallenge, plus the AI-use
+// disclosure fields the ai_agent_canary plugin reads from the attempt body.
+async function submitAttempt(challengeId, submission, disclosure) {
+  // A plugin that replaces submission handling keeps full control.
+  if (CTFd._functions.challenge.submitChallenge) {
+    return CTFd.pages.challenge.submitChallenge(challengeId, submission);
+  }
+
+  let url = "/api/v1/challenges/attempt";
+  if (CTFd.config.preview === true) {
+    url += "?preview=true";
+  }
+
+  // Always send ai_assisted (true or false): the plugin's
+  // REQUIRE_AI_DISCLOSURE mode rejects attempts that omit it.
+  const body = {
+    challenge_id: challengeId,
+    submission,
+    ai_assisted: Boolean(disclosure.aiAssisted),
+  };
+  if (body.ai_assisted) {
+    const tool = disclosure.aiTool.trim();
+    if (tool) {
+      body.ai_tool = tool.slice(0, 255);
+    }
+  }
+
+  const response = await CTFd.fetch(url, {
+    method: "POST",
+    body: JSON.stringify(body),
+  });
+  const result = await response.json();
+
+  if (CTFd._functions.challenge.displaySubmissionResponse) {
+    CTFd._functions.challenge.displaySubmissionResponse(result);
+  }
+
+  return result;
+}
+
 function addTargetBlank(html) {
   let dom = new DOMParser();
   let view = dom.parseFromString(html, "text/html");
@@ -78,6 +118,8 @@ Alpine.data("Challenge", () => ({
   selectedRating: 0,
   ratingReview: "",
   ratingSubmitted: false,
+  aiAssisted: false,
+  aiTool: "",
 
   getStyles() {
     let styles = {
@@ -205,10 +247,10 @@ Alpine.data("Challenge", () => ({
   },
 
   async submitChallenge() {
-    this.response = await CTFd.pages.challenge.submitChallenge(
-      this.id,
-      this.submission,
-    );
+    this.response = await submitAttempt(this.id, this.submission, {
+      aiAssisted: this.aiAssisted,
+      aiTool: this.aiTool,
+    });
 
     // Challenges page might be visible to anonymous users, redirect to login on submit
     if (this.response.data.status === "authentication_required") {

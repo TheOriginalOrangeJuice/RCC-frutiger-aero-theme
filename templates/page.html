@@ -74,7 +74,13 @@
       {% endif %}
     </div>
   {% else %}
-    <section class="aero-standard-page"><div class="aero-content-window aero-rich-content">{{ content | safe }}</div></section>
+    {% set route = (request.view_args or {}).get('route', '') | lower %}
+    <section class="aero-standard-page">
+      {% if route.startswith('rule') %}
+        {% with policy_id = "rules" %}{% include "components/ai_policy.html" %}{% endwith %}
+      {% endif %}
+      <div class="aero-content-window aero-rich-content">{{ content | safe }}</div>
+    </section>
   {% endif %}
 {% endblock %}
 

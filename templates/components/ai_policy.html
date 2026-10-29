@@ -1,0 +1,9 @@
+{# Visible AI-use policy. Shown on registration, the challenge board and the rules page.
+   Disclosures are recorded by the ai_agent_canary plugin from the submit form's checkbox. #}
+<aside class="aero-ai-policy{% if compact %} aero-ai-policy-compact{% endif %}" aria-labelledby="aero-ai-policy-title-{{ policy_id or 'main' }}">
+  <span class="aero-ai-policy-icon" aria-hidden="true"><i class="fas fa-robot"></i></span>
+  <p>
+    <strong id="aero-ai-policy-title-{{ policy_id or 'main' }}">{% trans %}AI / automated tool use:{% endtrans %}</strong>
+    {% trans %}Using AI assistants or automated solvers is discouraged. If you use one, you must disclose it when submitting a flag (check the box on the submit form). Disclosure carries no penalty; undisclosed automated use may be disqualified.{% endtrans %}
+  </p>
+</aside>

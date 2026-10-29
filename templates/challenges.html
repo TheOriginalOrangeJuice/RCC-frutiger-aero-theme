@@ -28,6 +28,8 @@
       {% endif %}
     </header>
 
+    {% with policy_id = "board", compact = true %}{% include "components/ai_policy.html" %}{% endwith %}
+
     <div class="aero-board-message" x-show="!loaded" role="status">
       <span class="aero-loader-orb"><i class="fas fa-globe-americas" aria-hidden="true"></i></span>
       <strong>{% trans %}Loading challenges…{% endtrans %}</strong>

@@ -189,6 +189,26 @@
               </div>
             </div>
 
+            {% block ai_disclosure %}
+            <div class="aero-ai-disclosure">
+              <div class="form-check">
+                <input class="form-check-input" type="checkbox" id="ai-assisted-checkbox" x-model="aiAssisted">
+                <label class="form-check-label" for="ai-assisted-checkbox">
+                  {% trans %}I used an AI assistant or automated tool on this challenge{% endtrans %}
+                </label>
+              </div>
+              <div class="aero-ai-tool" x-show="aiAssisted" x-cloak>
+                <label class="visually-hidden" for="ai-tool-input">{% trans %}Which tool? (optional){% endtrans %}</label>
+                <input
+                    id="ai-tool-input" class="form-control form-control-sm" type="text"
+                    maxlength="255" autocomplete="off" x-model="aiTool"
+                    @keyup.enter="submitChallenge()"
+                    placeholder="{% trans %}Which tool? (optional){% endtrans %}"
+                >
+              </div>
+            </div>
+            {% endblock %}
+
             <div class="row notification-row" x-effect="window.aeroHandleSubmissionResponse(response)">
               <div class="col-12">
                 <p class="visually-hidden" role="status" aria-live="polite" x-text="response ? response.data.message : ''"></p>
